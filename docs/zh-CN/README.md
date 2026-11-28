@@ -74,17 +74,24 @@ uv run linker-lab gallery run ycb-grasp      # 打开
 [templates/task](../../templates/task/README.md) 是一个独立项目形式的任务：复制这个文件夹，改名，修改任务。例子任务是左手抓起方块：场景、动作、复位、观测、奖励和终止条件都已写好，抓取的控制器或策略由你来写（`run.py` 只让机器人保持初始姿态）。任务配置 `MyTaskEnvCfg` 是 linker-lab 默认环境 `LWv0EnvCfg` 的子类，按 Isaac Lab 的方式逐项修改场景、动作、事件、观测、奖励和终止条件。
 
 ```bash
-cp -r templates/task ~/my-task && cd ~/my-task
-uv sync
-uv run python run.py             # 无窗口，机器人保持初始姿态
-uv run python run.py --viewer
+(
+  set -e
+  checkout=$(pwd -P)
+  cp -r templates/task ~/my-task
+  cd ~/my-task
+  uv add --editable "$checkout"
+  uv run python run.py             # 无窗口，机器人保持初始姿态
+  uv run python run.py --viewer
+)
 ```
 
-模板从本仓库的发布标签 `v2.0.0` 安装 linker-lab。要针对本地修改联调，按[模板 README](../../templates/task/README.md#use-a-local-checkout)改为本地路径依赖。
+上面的命令让 `~/my-task` 使用当前仓库里的 linker-lab，修改源码后即可在任务中验证。分享任务前，请确认模板指定的发布标签已存在，把任务副本中 `pyproject.toml` 的 `linker-lab` 来源改回该标签，运行 `uv sync` 更新 `uv.lock`，再一起提交这两个文件。详见[模板说明](../../templates/task/README.md)。
 
 加入学习器配置后，可以用 Isaac Lab 自带的 `isaaclab train` / `isaaclab play` 训练和回放，见模板的 README。
 
 ## 6. 开发与排查
+
+请在第 1 节克隆的 `linker-sim-isaac` 仓库根目录运行以下命令。第 5 节只在子 shell 中切换目录，执行完后当前终端仍在仓库根目录。
 
 ```bash
 uv sync --locked --group dev

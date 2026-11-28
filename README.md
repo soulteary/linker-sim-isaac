@@ -16,6 +16,8 @@ Use it to
 - **run pretrained policies** from the gallery (`linker-lab gallery run ycb-grasp`);
 - **write your own tasks** and train on them with Isaac Lab's trainers (`templates/task/`).
 
+For the earlier Mirror and Kaleidoscope commands, see the [v1.0.0 documentation](https://github.com/linker-bot/linker-sim-isaac/tree/v1.0.0#readme).
+
 ## Quick start
 
 Needs Linux (x86_64 or aarch64) with glibc 2.35 or newer (Ubuntu 22.04 or newer), git, an NVIDIA GPU with
@@ -24,16 +26,17 @@ driver 580 or newer and 10 GB of free disk ([requirements](docs/requirements.md)
 ```bash
 git clone https://github.com/linker-bot/linker-sim-isaac.git
 cd linker-sim-isaac
-./install.sh                              # installs everything into .venv, then checks it
-uv run linker-lab play                    # drive LW-v0 with the keyboard and mouse
-uv run linker-lab gallery run ycb-grasp   # a pretrained grasp policy (downloads its files once)
+./install.sh                              # installs into .venv and checks a headless simulation
 ```
 
 If `install.sh` installed uv, open a new terminal (or `source ~/.local/bin/env`) before
 the `uv run` commands.
 
-The playground and the gallery open a window, so they need a display; the doctor and your own
-scripts run headless.
+| Available display | First run | Expected result |
+| --- | --- | --- |
+| Headless NVIDIA server | Run the [first Python script](docs/environment.md#a-first-script) in the project environment | 16 workstations step for 10 simulated seconds and the policy observation has shape `(16, 52)` |
+| Desktop with a display | `uv run linker-lab play` | A window opens for keyboard and mouse control |
+| Desktop with a display | `uv run linker-lab gallery run ycb-grasp` | The policy and object files download on first use, then the grasp viewer opens |
 
 ## Documentation
 
@@ -76,4 +79,4 @@ compatibility layer: scripts written for them have to be rewritten against
 ## License
 
 Apache License 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). The gallery's policy weights
-and objects have their own licences, shown by `linker-lab gallery info`.
+and objects have their own licences, shown by `linker-lab gallery info ycb-grasp`.

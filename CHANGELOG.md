@@ -27,7 +27,7 @@ version.
   could brake and accelerate again (0.27 s instead of 0.22 s for 0.05 rad at 0.4 rad/s), and
   replanning every decision could change the path.
 
-## 2.0.0 (2026-11-27)
+## 2.0.0 (in preparation)
 
 The first release of linker-lab: one Linker workstation, LW-v0, in Isaac Lab 3.0, behaving
 like the real robot. It replaces this repository's earlier package, `linkerbot_sim`, whose

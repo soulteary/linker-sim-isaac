@@ -211,11 +211,21 @@ object on the table.
 import trimesh
 from linker_lab import objects
 
-mesh = trimesh.creation.box((0.05, 0.05, 0.05))  # or objects.load_mesh("your_mesh.stl")
+mesh = trimesh.creation.box((0.05, 0.05, 0.05))
 parts = [(mesh.vertices, mesh.faces)]
 cfg.scene.box = objects.object_cfg(
     parts, mass=0.1, pos=objects.on_table(parts, (0.4, 0.3)), prim_path="{ENV_REGEX_NS}/box"
 )
+```
+
+For a file-backed object, replace the `mesh` and `parts` assignments above with the following.
+Use the path to your own STL or OBJ file. `load_mesh` returns the parts list, ready to pass
+to `on_table` and `object_cfg`.
+
+```python
+from linker_lab import objects
+
+parts = objects.load_mesh("part.stl")
 ```
 
 Give each object its own `prim_path`. Read its pose with Isaac Lab's `env.scene["box"].data`. `objects.fixed_cfg` makes a fixed
