@@ -211,11 +211,21 @@ object on the table.
 import trimesh
 from linker_lab import objects
 
-mesh = trimesh.creation.box((0.05, 0.05, 0.05))  # or objects.load_mesh("your_mesh.stl")
+mesh = trimesh.creation.box((0.05, 0.05, 0.05))
 parts = [(mesh.vertices, mesh.faces)]
 cfg.scene.box = objects.object_cfg(
     parts, mass=0.1, pos=objects.on_table(parts, (0.4, 0.3)), prim_path="{ENV_REGEX_NS}/box"
 )
+```
+
+For a file-backed object, replace the `mesh` and `parts` assignments above with the following.
+Use the path to your own STL or OBJ file. `load_mesh` returns the parts list, ready to pass
+to `on_table` and `object_cfg`.
+
+```python
+from linker_lab import objects
+
+parts = objects.load_mesh("part.stl")
 ```
 
 Give each object its own `prim_path`. Read its pose with Isaac Lab's `env.scene["box"].data`. `objects.fixed_cfg` makes a fixed
@@ -236,15 +246,18 @@ cfg.scene.top = workstation.camera_cfg("top", width=640, height=360)
 # in the loop: env.scene["top"].data.output["rgb"], shape (num_envs, height, width, 3)
 ```
 
-Images are rendered by ray tracing on the GPU; each camera costs simulation speed.
+The renderer uses a pinhole model with lens distortion disabled. To clear the camera
+housing mesh, each rendered camera sits 6 mm forward along the optical axis from its
+mount's optical frame. Account for this offset when comparing depths or transforming
+point clouds using the mount pose. Rendering each camera costs GPU time.
 
 ## Many environments
 
-`cfg.scene.num_envs` sets how many workstations run in parallel on the GPU. With the arms
-moving within their limits, LW-v0 runs at roughly 28,000 environment steps per second with 400
-environments on a current high-end desktop GPU (each step 1/60 s of simulated time). Each
-decision also costs a fixed ~4.6 ms of kernel launches whatever the number of environments,
-so a few environments run far below that.
+`cfg.scene.num_envs` sets how many workstations run in parallel on the GPU. Each call to
+`env.step()` advances every environment by 1/60 simulated second. The
+[headless throughput check](requirements.md#performance) reports their combined progress
+in environment steps per wall-clock second. Use the same scene and environment count when
+comparing runs across GPUs.
 
 ## LW-v0's files
 

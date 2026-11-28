@@ -133,10 +133,23 @@ def test_code_blocks_compile():
 CPU_BLOCKS = [b for b in code_blocks() if NEEDS_SIMULATION not in b[1]]
 
 
+@pytest.fixture(scope="module")
+def docs_workdir(tmp_path_factory):
+    """Provide the user-supplied mesh files in the object examples."""
+    import trimesh
+
+    directory = tmp_path_factory.mktemp("docs")
+    mesh = trimesh.creation.box((0.06, 0.06, 0.06))
+    for filename in ("part.obj", "part.stl"):
+        mesh.export(directory / filename)
+    return directory
+
+
 @pytest.mark.parametrize("where, code", CPU_BLOCKS, ids=[w for w, _ in CPU_BLOCKS])
-def test_code_blocks_run(where, code):
+def test_code_blocks_run(where, code, docs_workdir, monkeypatch):
     from linker_lab import workstation
 
+    monkeypatch.chdir(docs_workdir)
     namespace = {"__name__": "docs", "workstation": workstation, "cfg": workstation.LWv0EnvCfg()}
     # Dataclass decorators resolve annotations through the defining module.
     module = ModuleType(namespace["__name__"])

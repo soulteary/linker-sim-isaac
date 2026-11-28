@@ -31,21 +31,26 @@ One workstation and a panel:
 
 - **Object**: one of 31 objects of the YCB Object and Model Set (cans, boxes, bottles, fruit,
   ten stacking cups, balls, a mug, a foam brick, a padlock, a Rubik's cube). None of them was
-  among the policy's training objects.
+  among the policy's training objects. The [entry manifest](../policy-gallery/ycb-grasp/manifest.yaml)
+  reports how the objects and resting poses were selected: each met a 95% grasp-success
+  threshold in the training project's evaluation over the drop region below.
 - **Drop**: puts the object at a random spot on the left half of the table (the region the
   policy was trained on: x 0.2-0.62 m, y 0-0.56 m in the environment frame), in one of its
   resting poses at random, turned at random, just above the table. If it does not come to
   rest it is placed again.
-- **Grasp** (once the object is at rest): the policy looks at the object once (512 points on
-  its surface, its pose, the robot's state) and corrects a recorded grasp: where the palm
-  goes, how it is turned, how far each finger closes. The grasp then runs open loop through
+- **Grasp** (once the object is at rest): the policy reads 512 surface points stored in `objects.npz`,
+  the simulated object pose and velocity, the robot state, and the demonstration grasp pose.
+  From this single observation it adjusts the recorded palm path and finger closure. The grasp then runs open loop through
   the arm's path mode within the real controller's limits: approach, close, lift 15 cm, hold
   2 s. The status line says whether the object was held by the left hand alone, 10 cm up, and
   if not, why.
 - **Reset**: clears the table and sends the arm home.
 
 Thin and flat objects (cutlery, markers, dice, screwdrivers) and the bowl are not in the
-list: the policy does not grasp them reliably yet. The scene runs at about 0.5-0.8× real time: fastest with the object
+list because grasps are unreliable. The [GPU regression test](../tests/gpu/test_gallery_gpu.py)
+checks that all 31 objects settle and that the tomato soup can and apple can each be grasped.
+
+The scene runs at about 0.5-0.8× real time: fastest with the object
 at rest, slower while it settles or is grasped (contacts cost time).
 
 **Licences.** The objects are CC BY 4.0 (Calli et al., "The YCB Object and Model Set", 2015).

@@ -352,16 +352,18 @@ object is one rigid body of one or more mesh **parts** (the pieces of a convex
 decomposition, or one mesh); each part collides as its convex hull. Files are written once
 into the user cache, named by their content.
 
+To load your own mesh, replace `part.obj` with the path to an OBJ or STL file.
+`load_mesh` returns the parts list that `on_table` and `object_cfg` take. Coordinates
+are in metres; pass `scale=0.001` for a mesh whose coordinates are in millimetres.
+
 ```python
 import linker_lab
 linker_lab.bootstrap()  # object_cfg imports Isaac Lab
-import trimesh
 from linker_lab import objects
 
-mesh = trimesh.creation.box((0.06, 0.06, 0.06))  # or objects.load_mesh("your_mesh.stl")
-box = [(mesh.vertices, mesh.faces)]
-pos = objects.on_table(box, (0.35, 0.0))
-object_cfg = objects.object_cfg(box, mass=0.1, pos=pos)  # cfg.scene.box = object_cfg
+parts = objects.load_mesh("part.obj")
+pos = objects.on_table(parts, (0.35, 0.0))
+object_cfg = objects.object_cfg(parts, mass=0.1, pos=pos)  # cfg.scene.box = object_cfg
 ```
 
 ### `object_cfg(parts, mass, *, com=None, inertia=None, pos=(0.35, 0, 0), rot=(0, 0, 0, 1), prim_path="{ENV_REGEX_NS}/object", visual=None)`

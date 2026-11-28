@@ -68,17 +68,23 @@ terms. Local aarch64 use and the workflow's x86_64 runner are separate validatio
 - `engine`: the pinned compatibility patches; an internal module rather than a public API.
 - `templates/task`: a separate task project; its sources and lock are independent of this checkout.
 
-The public contract is [api.md](api.md). New Python examples are collected by
-`tests/test_docs.py`; simulation examples execute separately in `tests/gpu/test_docs_gpu.py`.
+The public contract is [api.md](api.md). `tests/test_docs.py` collects fenced `python`
+blocks from the README, `docs/` and the task template README. It compiles every block and
+runs the CPU examples with `workstation` and `cfg` already defined. Blocks containing
+`launch_simulation` run in separate processes in `tests/gpu/test_docs_gpu.py` on CUDA.
+Shell commands, TOML snippets and alternatives in comments need separate checks.
 A change in behaviour comes with its test, the matching text in the API reference and the
 guides, and a line in the changelog under `## Unreleased`.
 
 ## Releases
 
-A release is an annotated tag `vX.Y.Z` whose version is the one in `pyproject.toml`,
-`linker_lab.__version__` and a dated changelog section (`scripts/prepare_release.py` checks
-them), and the task template installs linker-lab from that tag
-(`tests/test_release_links.py` checks it). Tags before `v2.0.0`
+When preparing the release commit, move the changes it includes from `Unreleased` into
+its version section and replace `in preparation` with the release date (`YYYY-MM-DD`).
+The release uses an annotated tag `vX.Y.Z`. `scripts/prepare_release.py` checks the tag,
+`pyproject.toml`, `linker_lab.__version__` and the dated changelog heading together.
+`tests/test_release_links.py` checks the tag string in the template. After publishing,
+copy the template into a fresh directory and run `uv sync` there with its original Git
+source to verify that a new user can resolve the published tag. Tags before `v2.0.0`
 (up to `v1.0.0`) belong to this repository's earlier package.
 
 The `Release` workflow takes an existing annotated tag plus a successful `Simulation` run
