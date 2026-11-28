@@ -1,6 +1,6 @@
 # linker-lab 快速入门
 
-linker-lab 是 Isaac Lab 的扩展，提供一台 Linker 工作站 **LW-v0**（两台 AR5 机械臂、两只 O6 灵巧手、桌子和三台相机），在 NVIDIA GPU 上仿真，行为与真机一致：机器人模型文件、驱动模型、真实控制器的运动限位和物理参数都已内置。
+linker-lab 是 Isaac Lab 的扩展，用 NVIDIA GPU 仿真 Linker 工作站 **LW-v0**（两台 AR5 机械臂、两只 O6 灵巧手、桌子和三台相机）。模型包含真机的机器人资产、驱动参数和控制器运动限位。具体任务的表现仍需在真实工作站上验证。
 
 它有三种用法：用 **playground** 手动操作机器人；用 **gallery** 运行预训练策略；用 **任务模板** 编写自己的任务，并用 Isaac Lab 的训练器训练。
 
@@ -65,24 +65,33 @@ uv run linker-lab gallery info ycb-grasp     # 说明、许可证和文件
 uv run linker-lab gallery run ycb-grasp      # 打开
 ```
 
-`run` 把条目的文件（约 12 MB）下载到 `~/.cache/linker-lab/gallery/`，校验后打开场景：一台工作站和一个面板。选择一个物体（31 个 YCB 物体，训练时都没有见过），按 **Drop**：物体落在桌面左半部分的随机位置，姿态和朝向随机。物体静止后按 **Grasp**：策略看一次物体，左手把它抓起并在 15 cm 高处保持。状态行显示是否抓住。**Reset** 清空桌面。策略权重仅供研究使用（非商业用途），许可证详见 `gallery info`。详见 [gallery](../gallery.md)。
+`run` 把条目的文件（约 12 MB）下载到 `~/.cache/linker-lab/gallery/`，校验后打开工作站和控制面板。从 31 个训练时未见过的 YCB 物体中选择一个，按 **Drop** 将它放到桌面左侧的随机位置，静置姿态和朝向随机。入选物体及其静置姿态在训练项目指定区域的评测中达到了 95% 的抓取成功率门槛。
+
+等物体静止后按 **Grasp**。策略读取物体文件中的 512 个表面点，以及仿真的物体、机器人状态和示教抓取位姿，一次性修正示教轨迹。左手随后沿轨迹尝试抓取、抬升 15 cm 并保持 2 秒。状态行显示结果，**Reset** 清空桌面。策略权重仅供非商业研究使用，许可证见 `gallery info ycb-grasp`。详见 [Gallery 的操作与评测说明](../gallery.md)。
 
 ## 5. 任务模板
 
 [templates/task](../../templates/task/README.md) 是一个独立项目形式的任务：复制这个文件夹，改名，修改任务。例子任务是左手抓起方块：场景、动作、复位、观测、奖励和终止条件都已写好，抓取的控制器或策略由你来写（`run.py` 只让机器人保持初始姿态）。任务配置 `MyTaskEnvCfg` 是 linker-lab 默认环境 `LWv0EnvCfg` 的子类，按 Isaac Lab 的方式逐项修改场景、动作、事件、观测、奖励和终止条件。
 
 ```bash
-cp -r templates/task ~/my-task && cd ~/my-task
-uv sync
-uv run python run.py             # 无窗口，机器人保持初始姿态
-uv run python run.py --viewer
+(
+  set -e
+  checkout=$(pwd -P)
+  cp -r templates/task ~/my-task
+  cd ~/my-task
+  uv add --editable "$checkout"
+  uv run python run.py             # 无窗口，机器人保持初始姿态
+  uv run python run.py --viewer
+)
 ```
 
-模板从本仓库的发布标签 `v2.0.0` 安装 linker-lab。要针对本地修改联调，按[模板 README](../../templates/task/README.md#use-a-local-checkout)改为本地路径依赖。
+上面的命令让 `~/my-task` 使用当前仓库里的 linker-lab，修改源码后即可在任务中验证。分享任务前，请确认模板指定的发布标签已存在，把任务副本中 `pyproject.toml` 的 `linker-lab` 来源改回该标签，运行 `uv sync` 更新 `uv.lock`，再一起提交这两个文件。详见[模板说明](../../templates/task/README.md)。
 
 加入学习器配置后，可以用 Isaac Lab 自带的 `isaaclab train` / `isaaclab play` 训练和回放，见模板的 README。
 
 ## 6. 开发与排查
+
+请在第 1 节克隆的 `linker-sim-isaac` 仓库根目录运行以下命令。第 5 节只在子 shell 中切换目录，执行完后当前终端仍在仓库根目录。
 
 ```bash
 uv sync --locked --group dev
