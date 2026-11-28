@@ -253,11 +253,11 @@ point clouds using the mount pose. Rendering each camera costs GPU time.
 
 ## Many environments
 
-`cfg.scene.num_envs` sets how many workstations run in parallel on the GPU. With the arms
-moving within their limits, LW-v0 runs at roughly 28,000 environment steps per second with 400
-environments on a current high-end desktop GPU (each step 1/60 s of simulated time). Each
-decision also costs a fixed ~4.6 ms of kernel launches whatever the number of environments,
-so a few environments run far below that.
+`cfg.scene.num_envs` sets how many workstations run in parallel on the GPU. Each call to
+`env.step()` advances every environment by 1/60 simulated second. The
+[headless throughput check](requirements.md#performance) reports their combined progress
+in environment steps per wall-clock second. Use the same scene and environment count when
+comparing runs across GPUs.
 
 ## LW-v0's files
 

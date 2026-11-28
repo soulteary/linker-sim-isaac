@@ -25,14 +25,30 @@ override; the task template provides it.
 LW-v0's files (the `linker-lw-v0` package) are installed with the project; the gallery
 downloads its policies' files when an entry first runs ([the files](gallery.md#the-files)).
 
-**Speed.** Reported measurements from the development workstation (a high-end desktop GPU); these
-are examples, not performance guarantees:
+## Performance
+
+The following timings were reported on a development workstation. The exact desktop GPU,
+driver and revision for those measurements were not recorded here.
 
 | | Speed |
 | --- | --- |
 | Playground (one environment, viewer) | real time, with about 20 % to spare |
 | Gallery `ycb-grasp` (viewer) | about 0.5-0.8× real time (slower while grasping) |
 | 400 environments, arms moving, headless | about 28,000 environment steps per second |
+
+To measure headless throughput on your own GPU, run this from the installed repository:
+
+```bash
+git rev-parse HEAD
+nvidia-smi --query-gpu=name,driver_version --format=csv
+uv run --no-sync python tests/gpu/arm_hand_check.py limits 400 4.0
+```
+
+The `limits` workload runs 400 environments for four simulated seconds with moving arms,
+without cameras or a viewer. Its `RESULT` line reports `env_steps_per_s` across all
+environments. Timing starts after the first decision and includes the motion-limit checks.
+Each environment advances 1/60 simulated second per decision. Record the commit, GPU and
+driver alongside the result when comparing runs.
 
 On a slower GPU the viewers run below real time; the panel shows the simulation speed (on a
 Jetson Thor: the playground about 0.5×, the gallery about 0.3× real time). The

@@ -60,7 +60,7 @@ releases end at `v1.0.0`; hence 2.0.0.
   `HandAction`.
 - **Documentation** (`docs/`): getting started and troubleshooting, the LW-v0 environment, the
   gallery, requirements, the API reference, development and validation, and a Chinese quick
-  start. Every code block runs in the tests.
+  start. The documentation tests collect Python examples for CPU and GPU checks.
 - **Task template** (`templates/task/`): a task as its own project, with linker-lab as a
   dependency, an `LWv0EnvCfg` subclass and Isaac Lab's `isaaclab.tasks` entry point, so
   `isaaclab train` and `isaaclab play` can run it once a learner configuration is added.
