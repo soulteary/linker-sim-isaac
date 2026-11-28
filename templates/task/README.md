@@ -115,8 +115,8 @@ Train for two updates and replay the latest checkpoint for this experiment. Use 
 you registered if you renamed the task.
 
 ```bash
-uv run isaaclab train --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 16 --max_iterations 2 --headless
-uv run isaaclab play --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 4 --checkpoint latest --headless
+uv run isaaclab train --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 16 --max_iterations 2 --viz none
+uv run isaaclab play --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 4 --checkpoint latest --viz none
 ```
 
 Training writes `model_*.pt` under `logs/rsl_rl/lw_v0_box/<run>/` in the task project.
