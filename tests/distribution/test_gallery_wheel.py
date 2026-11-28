@@ -23,14 +23,14 @@ def test_wheel_gallery_outside_checkout(tmp_path):
     installed = tmp_path / "installed"
     with zipfile.ZipFile(next(wheel_dir.glob("*.whl"))) as wheel:
         for entry in (root / "policy-gallery").glob("*/manifest.yaml"):
-            prefix = f"linker_lab/_gallery/{entry.parent.name}"
+            prefix = f"linker_sim_isaac/_gallery/{entry.parent.name}"
             assert f"{prefix}/manifest.yaml" in wheel.namelist()
             assert f"{prefix}/play.py" in wheel.namelist()
         wheel.extractall(installed)
     env = dict(os.environ, PYTHONPATH=str(installed))
     for args, expected in ((["list"], "ycb-grasp"), (["info", "ycb-grasp"], "License:")):
         result = subprocess.run(
-            [sys.executable, "-m", "linker_lab.cli", "gallery", *args],
+            [sys.executable, "-m", "linker_sim_isaac.cli", "gallery", *args],
             cwd=tmp_path,
             env=env,
             check=True,
@@ -39,7 +39,7 @@ def test_wheel_gallery_outside_checkout(tmp_path):
         )
         assert expected in result.stdout
     result = subprocess.run(
-        [sys.executable, "-c", "from linker_lab import gallery; "
+        [sys.executable, "-c", "from linker_sim_isaac import gallery; "
          "assert gallery.ROOT.is_relative_to(__import__('pathlib').Path(__import__('sys').argv[1])); "
          "assert (gallery.ROOT / 'ycb-grasp' / 'play.py').is_file()", str(installed)],
         cwd=tmp_path, env=env, capture_output=True, text=True,

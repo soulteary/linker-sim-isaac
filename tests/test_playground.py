@@ -4,12 +4,12 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from linker_lab import assets
+from linker_sim_isaac import assets
 
 
 @pytest.fixture(scope="module")
 def pg():
-    from linker_lab import playground
+    from linker_sim_isaac import playground
 
     return playground
 
@@ -58,7 +58,7 @@ def test_the_goal_stays_within_the_lead_of_the_palm_point(pg):
 
 
 def test_environment(pg):
-    from linker_lab import workstation
+    from linker_sim_isaac import workstation
 
     cfg = pg.env_cfg()
     assert cfg.scene.num_envs == 1

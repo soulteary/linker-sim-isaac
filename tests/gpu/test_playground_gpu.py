@@ -16,7 +16,7 @@ pytestmark = [
 
 def test_playground_selftest(tmp_path):
     result = subprocess.run(
-        [sys.executable, "-m", "linker_lab.cli", "play", "--selftest", "--out", str(tmp_path)],
+        [sys.executable, "-m", "linker_sim_isaac.cli", "play", "--selftest", "--out", str(tmp_path)],
         capture_output=True, text=True, timeout=1200,
     )
     report = json.loads((tmp_path / "report.json").read_text())

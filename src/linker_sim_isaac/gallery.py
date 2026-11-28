@@ -1,9 +1,9 @@
-"""The policy gallery: pretrained policies that run on LW-v0 (``linker-lab gallery``).
+"""The policy gallery: pretrained policies that run on LW-v0 (``linker-sim-isaac gallery``).
 
 An entry is a folder in ``policy-gallery/`` of the repository:
 
-    manifest.yaml   name, version, title, description, license, the linker-lab versions it
-                    runs on (``linker_lab``, a version specifier) and its ``artifacts`` (file
+    manifest.yaml   name, version, title, description, license, the linker-sim-isaac versions it
+                    runs on (``linker_sim_isaac``, a version specifier) and its ``artifacts`` (file
                     name -> url and sha256)
     play.py         run(artifacts): opens the entry's scene in the viewer
 
@@ -29,7 +29,7 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
-from linker_lab import __version__, assets
+from linker_sim_isaac import __version__, assets
 
 __all__ = [
     "entries",
@@ -45,7 +45,7 @@ __all__ = [
 
 # Wheels carry the entries inside the package; editable checkouts use the source
 # gallery so edits to a policy are visible without rebuilding the distribution.
-_PACKAGED_ROOT = Path(str(importlib.resources.files("linker_lab") / "_gallery"))
+_PACKAGED_ROOT = Path(str(importlib.resources.files("linker_sim_isaac") / "_gallery"))
 ROOT = (
     _PACKAGED_ROOT
     if _PACKAGED_ROOT.is_dir()
@@ -57,13 +57,13 @@ FIELDS = (
     "title",
     "description",
     "license",
-    "linker_lab",
+    "linker_sim_isaac",
     "artifacts",
 )
 
 
 class GalleryError(RuntimeError):
-    """An entry is missing, malformed, not for this linker-lab, or its artifacts do not match."""
+    """An entry is missing, malformed, not for this linker-sim-isaac, or its artifacts do not match."""
 
 
 def entries() -> list[str]:
@@ -92,19 +92,19 @@ def manifest(name: str) -> dict:
         ):
             raise GalleryError(f"{file}: artifact {artifact!r} needs a url and a sha256")
     try:
-        SpecifierSet(data["linker_lab"])
+        SpecifierSet(data["linker_sim_isaac"])
     except InvalidSpecifier as error:
-        raise GalleryError(f"{file}: linker_lab: {error}") from error
+        raise GalleryError(f"{file}: linker_sim_isaac: {error}") from error
     if not (ROOT / name / "play.py").is_file():
         raise GalleryError(f"gallery entry {name!r} has no play.py")
     return data
 
 
 def supported(data: dict) -> bool:
-    """Whether this linker-lab's version is in the entry's range."""
+    """Whether this linker-sim-isaac's version is in the entry's range."""
     from packaging.specifiers import SpecifierSet
 
-    return SpecifierSet(data["linker_lab"]).contains(__version__, prereleases=True)
+    return SpecifierSet(data["linker_sim_isaac"]).contains(__version__, prereleases=True)
 
 
 def info(name: str) -> str:
@@ -116,7 +116,7 @@ def info(name: str) -> str:
         data["description"].strip(),
         "",
         f"License: {data['license'].strip()}",
-        f"Runs on linker-lab {data['linker_lab']} (this is {__version__}"
+        f"Runs on linker-sim-isaac {data['linker_sim_isaac']} (this is {__version__}"
         + ("" if supported(data) else ", NOT supported")
         + ")",
         "Artifacts:",
@@ -149,7 +149,7 @@ def fetch(name: str) -> dict[str, Path]:
 def _download(url: str, destination: Path, expected_sha256: str) -> None:
     """Verify a private temporary download before atomically publishing it to the cache."""
     destination.parent.mkdir(parents=True, exist_ok=True)
-    print(f"linker-lab: downloading {url}", file=sys.stderr)
+    print(f"linker-sim-isaac: downloading {url}", file=sys.stderr)
     partial = None
     try:
         with tempfile.NamedTemporaryFile(
@@ -174,7 +174,7 @@ def run(name: str) -> None:
     """Open an entry's scene (see the module docstring); returns when its window is closed."""
     data = manifest(name)
     if not supported(data):
-        raise GalleryError(f"{name} runs on linker-lab {data['linker_lab']}, this is {__version__}")
+        raise GalleryError(f"{name} runs on linker-sim-isaac {data['linker_sim_isaac']}, this is {__version__}")
     load(name).run(fetch(name))
 
 
@@ -185,7 +185,7 @@ def load(name: str):
     If execution fails, restore the previous module registration, if any.
     """
     spec = importlib.util.spec_from_file_location(
-        f"linker_lab_gallery_{name}", ROOT / name / "play.py"
+        f"linker_sim_isaac_gallery_{name}", ROOT / name / "play.py"
     )
     play = importlib.util.module_from_spec(spec)
     previous = sys.modules.get(spec.name)

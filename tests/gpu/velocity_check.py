@@ -19,9 +19,9 @@ import os
 import sys
 import tempfile
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 
 def author(directory):

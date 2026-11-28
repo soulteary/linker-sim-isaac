@@ -5,7 +5,7 @@ import json
 import sys
 import time
 
-from linker_lab import gallery
+from linker_sim_isaac import gallery
 
 play = gallery.load("ycb-grasp")  # prepares the engine before Isaac Lab is imported
 

@@ -3,8 +3,8 @@
 import pytest
 import torch
 
-from linker_lab import assets, hand
-from linker_lab.hand import HandMotor
+from linker_sim_isaac import assets, hand
+from linker_sim_isaac.hand import HandMotor
 
 KP = (2500.0, 600.0, 1250.0, 1250.0, 1250.0, 1250.0)  # the bundle's drive stiffness
 LOWER = (0.0,) * 6

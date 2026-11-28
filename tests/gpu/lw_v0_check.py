@@ -15,7 +15,7 @@ import gymnasium as gym
 import torch
 import trimesh
 
-from linker_lab import objects, workstation  # workstation bootstraps the engine
+from linker_sim_isaac import objects, workstation  # workstation bootstraps the engine
 
 BOX = 0.06  # edge [m]
 MASS = 0.1  # [kg]
@@ -23,7 +23,7 @@ XY = (0.35, 0.0)
 
 
 def main(num_envs: int, seconds: float) -> dict:
-    from isaaclab.app import launch_simulation  # after linker_lab.workstation
+    from isaaclab.app import launch_simulation  # after linker_sim_isaac.workstation
 
     box = trimesh.creation.box((BOX, BOX, BOX))
     parts = [(box.vertices, box.faces)]

@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from linker_lab import snapshot
+from linker_sim_isaac import snapshot
 
 
 def environment(*, term=None, class_instances=(), reset_events=None):
@@ -42,7 +42,7 @@ def test_state_outside_the_snapshot_is_refused(env, message):
 
 
 def test_the_workstation_and_a_reset_event_without_cooldown_are_accepted():
-    from linker_lab.workstation import LWv0EnvCfg
+    from linker_sim_isaac.workstation import LWv0EnvCfg
 
     cfg = LWv0EnvCfg()
     env = environment(reset_events={"reset_to_home": cfg.events.reset_to_home})

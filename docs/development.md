@@ -1,7 +1,7 @@
 # Development and validation
 
 Run these commands from the `linker-sim-isaac` repository root on a supported Linux system.
-The package and CLI are named `linker-lab`; Python modules live in `src/linker_lab/`.
+The package and CLI are named `linker-sim-isaac`; Python modules live in `src/linker_sim_isaac/`.
 
 ## Install the development environment
 
@@ -43,9 +43,9 @@ The separate conftest root keeps this distribution check independent of engine b
 ## GPU and viewer acceptance
 
 ```bash
-uv run --no-sync linker-lab doctor
+uv run --no-sync linker-sim-isaac doctor
 uv run --no-sync python -m pytest tests/gpu -ra
-uv run --no-sync linker-lab play --selftest --out tests/outputs/playground
+uv run --no-sync linker-sim-isaac play --selftest --out tests/outputs/playground
 ```
 
 A CUDA device is required. Window tests also require a working display (`DISPLAY` in the
@@ -81,7 +81,7 @@ guides, and a line in the changelog under `## Unreleased`.
 When preparing the release commit, move the changes it includes from `Unreleased` into
 its version section and replace `in preparation` with the release date (`YYYY-MM-DD`).
 The release uses an annotated tag `vX.Y.Z`. `scripts/prepare_release.py` checks the tag,
-`pyproject.toml`, `linker_lab.__version__` and the dated changelog heading together.
+`pyproject.toml`, `linker_sim_isaac.__version__` and the dated changelog heading together.
 `tests/test_release_links.py` checks the tag string in the template. After publishing,
 copy the template into a fresh directory and run `uv sync` there with its original Git
 source to verify that a new user can resolve the published tag. Tags before `v2.0.0`

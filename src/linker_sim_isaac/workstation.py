@@ -1,6 +1,6 @@
 """LW-v0 in Isaac Lab: the scene, the palm point, the cameras and the default environment.
 
-Scene (``LWv0SceneCfg``): the four parts of LW-v0 (``linker_lab.assets``), spawned from their
+Scene (``LWv0SceneCfg``): the four parts of LW-v0 (``linker_sim_isaac.assets``), spawned from their
 USD files with nothing changed, at their poses in ``lw_v0.xml``:
 
     left, right   arm units (AR5 arm + O6 hand + wrist camera), one articulation each,
@@ -13,21 +13,21 @@ The environment frame is the arm-base frame: x forward over the table, z up; the
 top is 0.5 m below the origin.
 
 Default environment (``LWv0EnvCfg``, registered as ``Linker-LW-v0``): the scene, the
-physics of ``linker_lab.physics`` (480 Hz, actions at 60 Hz), an ``ArmAction`` per arm
-(joint goals through the trajectory generator, real limits; ``linker_lab.arm``) and a
-``HandAction`` per hand (shaft targets; ``linker_lab.hand``), joint-state observations,
+physics of ``linker_sim_isaac.physics`` (480 Hz, actions at 60 Hz), an ``ArmAction`` per arm
+(joint goals through the trajectory generator, real limits; ``linker_sim_isaac.arm``) and a
+``HandAction`` per hand (shaft targets; ``linker_sim_isaac.hand``), joint-state observations,
 reset to the home pose. User tasks subclass it and change the action options with
 :func:`arm_action_cfg` and :func:`hand_action_cfg`.
 
-Importing this module applies ``linker_lab.bootstrap()`` (so import it before Isaac Lab)
+Importing this module applies ``linker_sim_isaac.bootstrap()`` (so import it before Isaac Lab)
 and converts LW-v0's parts to USD on first use.
 """
 
 from __future__ import annotations
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 from functools import cache
 
@@ -45,7 +45,7 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sim import UsdFileCfg
 from isaaclab.utils import configclass
 
-from linker_lab import arm, assets, hand, physics
+from linker_sim_isaac import arm, assets, hand, physics
 
 __all__ = [
     "LWv0EnvCfg",
@@ -270,7 +270,7 @@ def palm_pose_w(robot):
 
 
 def arm_action_cfg(side: str, *, frame: str = "tcp", **options) -> arm.ArmActionCfg:
-    """An :class:`~linker_lab.arm.ArmActionCfg` for one arm of LW-v0.
+    """An :class:`~linker_sim_isaac.arm.ArmActionCfg` for one arm of LW-v0.
 
     ``options`` are the action's options (``command``, ``interpolation``, ``stream``,
     ``limits``, ``ik_damping``). Pose commands (``command="pose"``) move ``frame``: ``"tcp"``,
@@ -288,7 +288,7 @@ def arm_action_cfg(side: str, *, frame: str = "tcp", **options) -> arm.ArmAction
 
 
 def hand_action_cfg(side: str, **options) -> hand.HandActionCfg:
-    """A :class:`~linker_lab.hand.HandActionCfg` for one hand of LW-v0 (``options``: e.g.
+    """A :class:`~linker_sim_isaac.hand.HandActionCfg` for one hand of LW-v0 (``options``: e.g.
     ``normalized=True``)."""
     motor = assets.motor(side)
     return hand.HandActionCfg(asset_name=side, joint_names=list(motor["shafts"]), motor=motor, **options)

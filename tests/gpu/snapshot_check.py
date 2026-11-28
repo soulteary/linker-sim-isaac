@@ -18,9 +18,9 @@ import json
 import sys
 from pathlib import Path
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 import gymnasium as gym  # noqa: E402
 import numpy as np  # noqa: E402
@@ -29,7 +29,7 @@ import trimesh  # noqa: E402
 from isaaclab.app import launch_simulation  # noqa: E402
 from isaaclab.utils.math import subtract_frame_transforms  # noqa: E402
 
-from linker_lab import hand, objects, snapshot, workstation  # noqa: E402
+from linker_sim_isaac import hand, objects, snapshot, workstation  # noqa: E402
 
 EDGE, MASS = 0.06, 0.1
 TABLE = objects.table()["top"]

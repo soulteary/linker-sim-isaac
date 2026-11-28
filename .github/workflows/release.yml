@@ -103,12 +103,12 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${RELEASE_TAG#v}"
-          ARCHIVE="dist/linker-lab-${VERSION}.tar.gz"
+          ARCHIVE="dist/linker-sim-isaac-${VERSION}.tar.gz"
           args=(
             "$RELEASE_TAG"
             "$ARCHIVE#Source workspace (tar.gz)"
             "dist/SHA256SUMS#SHA-256 checksums"
-            --title "linker-lab ${RELEASE_TAG}"
+            --title "linker-sim-isaac ${RELEASE_TAG}"
             --notes-file dist/RELEASE_NOTES.md
             --target "$(git rev-parse HEAD)"
             --verify-tag

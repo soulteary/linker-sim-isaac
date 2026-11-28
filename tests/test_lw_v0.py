@@ -1,11 +1,11 @@
-"""LW-v0's files as linker-lab uses them (CPU): solver options, parts, cameras, the robot."""
+"""LW-v0's files as linker-sim-isaac uses them (CPU): solver options, parts, cameras, the robot."""
 
 import math
 
 import numpy as np
 import pytest
 
-from linker_lab import assets, physics
+from linker_sim_isaac import assets, physics
 
 
 def test_physics_values():

@@ -1,6 +1,6 @@
 # API reference
 
-This page is linker-lab's public API: the modules, names and members listed here. From
+This page is linker-sim-isaac's public API: the modules, names and members listed here. From
 2.0.0 they follow semantic versions:
 
 - a change that breaks code using them is a new major version;
@@ -12,9 +12,9 @@ Everything else is internal and may change in any release, whether or not its na
 with an underscore. That includes the modules `engine`, `playground` and `cli`. Each public
 module's `__all__` is exactly its list below, and a test keeps the two equal.
 
-linker-lab is an Isaac Lab extension: an LW-v0 environment is an ordinary Isaac Lab
+linker-sim-isaac is an Isaac Lab extension: an LW-v0 environment is an ordinary Isaac Lab
 `ManagerBasedRLEnv`, and everything Isaac Lab provides on it (the scene's assets and their
-`data`, the managers, sensors, learners) is Isaac Lab's API, not repeated here. linker-lab
+`data`, the managers, sensors, learners) is Isaac Lab's API, not repeated here. linker-sim-isaac
 promises the names it gives to that environment: the scene entities, the action terms, the
 observation, event and termination terms listed below, and the gym id `Linker-LW-v0`. The
 names of LW-v0's bodies, joints, sites and cameras are those of its files, which
@@ -30,14 +30,14 @@ linker-sim-assets keeps fixed throughout 1.x.
   pose commands are in **each arm's base frame**, its articulation's root, the frame the
   real controller uses.
 - A **decision** is 1/60 s: one action per decision, held for 8 physics steps of 1/480 s.
-- **Import linker-lab before Isaac Lab.** Importing `workstation`, `arm`, `hand` or `snapshot` calls
-  `linker_lab.bootstrap()`, which prepares the pinned physics engine and must run before
+- **Import linker-sim-isaac before Isaac Lab.** Importing `workstation`, `arm`, `hand` or `snapshot` calls
+  `linker_sim_isaac.bootstrap()`, which prepares the pinned physics engine and must run before
   Isaac Lab simulation modules are imported. `objects`, `physics`, `gallery` and `assets` import
   nothing from Isaac Lab, but `objects.object_cfg`, `objects.fixed_cfg` and
   `physics.simulation_cfg` do when called: call `bootstrap()` (or import `workstation`) first.
 
 ```python
-from linker_lab import workstation  # first: prepares the engine
+from linker_sim_isaac import workstation  # first: prepares the engine
 import gymnasium as gym
 from isaaclab.app import launch_simulation
 
@@ -50,7 +50,7 @@ with launch_simulation(cfg, {"headless": True}):
         env.step(workstation.home_action(env))
 ```
 
-## `linker_lab`
+## `linker_sim_isaac`
 
 ### `bootstrap()`
 
@@ -63,9 +63,9 @@ The modules that need it call it when imported.
 
 ### `__version__`
 
-linker-lab's version, e.g. `"2.0.0"`.
+linker-sim-isaac's version, e.g. `"2.0.0"`.
 
-## `linker_lab.workstation`
+## `linker_sim_isaac.workstation`
 
 The LW-v0 scene, its frames, the default environment and the action configurations.
 
@@ -89,7 +89,7 @@ Tasks subclass it and replace its parts.
 
 The workstation's four parts, spawned from LW-v0's files unchanged, at their poses in
 `lw_v0.xml`. No floor and no cameras: add cameras with `camera_cfg`, objects with
-`linker_lab.objects`.
+`linker_sim_isaac.objects`.
 
 - `left`, `right`: the arm units (AR5 arm, O6 hand, wrist camera), one articulation each,
   starting at home. Their drives' gains and torque caps come from the files.
@@ -202,7 +202,7 @@ The camera streams: name → (part, optical body, rate [Hz], image types): `left
 `left_depth`, `right_rgb`, `right_depth` (the wrist cameras, Gemini 335L: colour 60 Hz,
 depth 30 Hz) and `top` (ZED 2i, colour and depth, 60 Hz).
 
-## `linker_lab.arm`
+## `linker_sim_isaac.arm`
 
 The AR5 arm: how it is commanded, its servo model and its motion limits. The real arm is
 commanded through the xCore SDK in one of two ways, and `ArmAction` models both:
@@ -268,7 +268,7 @@ The Isaac Lab `ActionTerm` made from an `ArmActionCfg`; get it with
   next (the generator's and the stream's state, this decision's references and servo targets,
   the last command, `limit_hits`, the IK's command), as a dict of copied tensors and ints, and
   its restoration in place; `set_state` raises `ValueError` before changing anything if the
-  keys, shapes or dtypes differ. Used by `linker_lab.snapshot`.
+  keys, shapes or dtypes differ. Used by `linker_sim_isaac.snapshot`.
 - `process_actions(actions)`, `apply_actions()`, `reset(env_ids=None)`: the `ActionTerm`
   interface, called by Isaac Lab's action manager.
 
@@ -294,7 +294,7 @@ order. The J6 and J7 ranges in LW-v0's files (±60°, ±90°) are its bounding b
 
 The servo model keeps each drive's torque this far [N·m] below its cap (1.0).
 
-## `linker_lab.hand`
+## `linker_sim_isaac.hand`
 
 The O6 hand. Its six motors drive through self-locking gears: a shaft moves toward its
 target, as fast as its torque allows, and a load can stop it but never push it back. A
@@ -345,7 +345,7 @@ The thumb yaw [rad] that turns the thumb opposite the index finger (1.04).
 
 The shaft targets `current` (N, 6) with the thumb turned opposite the index finger.
 
-## `linker_lab.objects`
+## `linker_sim_isaac.objects`
 
 Rigid objects: import from meshes, their contact material, placement on the table. An
 object is one rigid body of one or more mesh **parts** (the pieces of a convex
@@ -357,9 +357,9 @@ To load your own mesh, replace `part.obj` with the path to an OBJ or STL file.
 are in metres; pass `scale=0.001` for a mesh whose coordinates are in millimetres.
 
 ```python
-import linker_lab
-linker_lab.bootstrap()  # object_cfg imports Isaac Lab
-from linker_lab import objects
+import linker_sim_isaac
+linker_sim_isaac.bootstrap()  # object_cfg imports Isaac Lab
+from linker_sim_isaac import objects
 
 parts = objects.load_mesh("part.obj")
 pos = objects.on_table(parts, (0.35, 0.0))
@@ -415,7 +415,7 @@ triangle indices (M, 3).
 The objects' contact material, as in MJCF: `friction` 1, `torsional_friction` 0.005,
 `rolling_friction` 0, `condim` 4, `solref`, `solimp`, `margin`, `gap`.
 
-## `linker_lab.physics`
+## `linker_sim_isaac.physics`
 
 The physics LW-v0 is simulated with. The robot's own properties (masses, ranges, drives,
 collision shapes, contact settings) are in LW-v0's files; the time step and the solver
@@ -444,17 +444,17 @@ The solver settings (names as in MJCF `<option>`): `integrator`, `solver`, `iter
 Isaac Lab's `SimulationCfg` with these settings: MuJoCo-Warp solves the dynamics,
 Newton's collision pipeline finds the contacts every physics step.
 
-## `linker_lab.snapshot`
+## `linker_sim_isaac.snapshot`
 
 Save an environment between two `env.step()` calls and restore it later, in the same process
-or in a new one with the same linker-lab, packages and configuration, without a reset: after a
+or in a new one with the same linker-sim-isaac, packages and configuration, without a reset: after a
 restore, every input of the next `env.step()` is what it was at the capture. One environment
 (`num_envs == 1`). Isaac Lab's own `env.reset_to()` resets first, which restarts `ArmAction`'s
 and `HandAction`'s controllers from rest (a moving arm replans from standstill, a holding hand
 lets go).
 
 ```python
-from linker_lab import snapshot, workstation
+from linker_sim_isaac import snapshot, workstation
 
 def try_again(env, attempts):
     """Run each attempt (a function of env) from the same moment."""
@@ -496,7 +496,7 @@ grippers; a sensor other than a camera; a permanent external wrench.
 
 Writes the snapshot into `env` without a reset and returns the observations at the snapshot
 (also stored in `env.obs_buf`). First everything is checked: the same refusals as `capture`,
-the header (linker-lab's commit when running from a checkout, the versions of linker-lab,
+the header (linker-sim-isaac's commit when running from a checkout, the versions of linker-sim-isaac,
 linker-lw-v0, Isaac Lab, Newton, MuJoCo-Warp, Warp and torch, the configuration fingerprint,
 the scene's entities, the action terms and their sizes), every tensor's shape and dtype, and
 that the saved random generators' states can be loaded.
@@ -519,7 +519,7 @@ Reads a file written by `save`; no code in the file is executed (`torch.load` wi
 
 A captured environment, frozen.
 
-- `header`: a dict: `schema`, `linker_lab_commit`, `packages`, `config` (the sha256 of the
+- `header`: a dict: `schema`, `linker_sim_isaac_commit`, `packages`, `config` (the sha256 of the
   environment configuration, leaving out only `viewer` and `sim.visualizer_cfgs`, which do not
   change what `env.step()` computes), `scene`, `actions`, `created` (UTC).
 - `state`: the saved state; its layout is internal and may change with the schema.
@@ -530,11 +530,11 @@ Raised for every refusal and failure. Its attribute `physics_modified` is False 
 environment was not changed (every refusal and mismatch), True when writing had begun and
 failed: discard that environment's process.
 
-## `linker_lab.gallery`
+## `linker_sim_isaac.gallery`
 
 The policy gallery: pretrained policies that run on LW-v0. An entry is a folder
 `policy-gallery/<entry>/` of this repository with a `manifest.yaml` (name, version, title, description,
-license, the linker-lab versions it runs on as `linker_lab`, and its `artifacts`: file name
+license, the linker-sim-isaac versions it runs on as `linker_sim_isaac`, and its `artifacts`: file name
 → `url` and `sha256`) and a `play.py` whose `run(artifacts)` opens the entry's scene.
 An editable install reads the entries from the clone's `policy-gallery/`; a wheel carries
 them inside the package. The weights and data are downloads ([the files](gallery.md#the-files)).
@@ -550,12 +550,12 @@ a sha256, a valid version range.
 
 ### `info(name)`
 
-A readable summary of an entry: title, description, licence, the linker-lab versions it
+A readable summary of an entry: title, description, licence, the linker-sim-isaac versions it
 runs on, its files' URLs.
 
 ### `supported(manifest)`
 
-Whether this linker-lab's version is in the manifest's range.
+Whether this linker-sim-isaac's version is in the manifest's range.
 
 ### `run(name)`
 
@@ -579,13 +579,13 @@ sha256 matches, e.g. to try an entry before its files are published.
 
 ### `GalleryError`
 
-Raised when an entry is missing, malformed, not for this linker-lab, or its files do not
+Raised when an entry is missing, malformed, not for this linker-sim-isaac, or its files do not
 match.
 
-## `linker_lab.assets`
+## `linker_sim_isaac.assets`
 
 LW-v0's robot files: the data package `linker-lw-v0` from linker-sim-assets, installed
-with linker-lab.
+with linker-sim-isaac.
 
 ### `NAME`
 
@@ -604,8 +604,8 @@ it has no such file.
 
 | Command | What it does |
 | --- | --- |
-| `linker-lab doctor` | Checks the installation: versions, the GPU, the engine patches, one simulated second |
-| `linker-lab play [--selftest [--out DIR]]` | The playground: drive LW-v0 by hand; `--selftest` runs a scripted session and reports |
-| `linker-lab gallery list` | The gallery's entries |
-| `linker-lab gallery info ENTRY` | An entry's description and licences |
-| `linker-lab gallery run ENTRY` | Open an entry in the viewer |
+| `linker-sim-isaac doctor` | Checks the installation: versions, the GPU, the engine patches, one simulated second |
+| `linker-sim-isaac play [--selftest [--out DIR]]` | The playground: drive LW-v0 by hand; `--selftest` runs a scripted session and reports |
+| `linker-sim-isaac gallery list` | The gallery's entries |
+| `linker-sim-isaac gallery info ENTRY` | An entry's description and licences |
+| `linker-sim-isaac gallery run ENTRY` | Open an entry in the viewer |

@@ -6,7 +6,7 @@ object's mass, centre of mass and inertia are written into its USD file explicit
 you give only the mass, they are computed for a uniform density over the parts' hulls
 (what collides). Every collider gets the object contact material below.
 
-    from linker_lab import objects
+    from linker_sim_isaac import objects
     parts = objects.load_mesh("004_sugar_box.stl")
     cfg.scene.object = objects.object_cfg(parts, mass=0.5, pos=objects.on_table(parts, (0.35, 0.0)))
 
@@ -31,7 +31,7 @@ from pathlib import Path
 
 import numpy as np
 
-from linker_lab import assets
+from linker_sim_isaac import assets
 
 __all__ = [
     "object_cfg",

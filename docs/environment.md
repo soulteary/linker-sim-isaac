@@ -9,7 +9,7 @@ and hands are commanded. [api.md](api.md) lists every name.
 ## A first script
 
 ```python
-from linker_lab import workstation  # first: prepares the physics engine for Isaac Lab
+from linker_sim_isaac import workstation  # first: prepares the physics engine for Isaac Lab
 import gymnasium as gym
 from isaaclab.app import launch_simulation
 
@@ -24,11 +24,11 @@ with launch_simulation(cfg, {"headless": True}):
     env.close()
 ```
 
-Import linker-lab before Isaac Lab: `linker_lab.workstation` (and `arm`, `hand`) call
-`linker_lab.bootstrap()`, which prepares the pinned physics engine (Newton 1.8 with
+Import linker-sim-isaac before Isaac Lab: `linker_sim_isaac.workstation` (and `arm`, `hand`) call
+`linker_sim_isaac.bootstrap()`, which prepares the pinned physics engine (Newton 1.8 with
 MuJoCo-Warp 3.17, newer than the one Isaac Lab 3.0 was released with) and must run before
 Isaac Lab's simulation modules are imported. The first run converts LW-v0's files to USD
-(about a second, cached in `~/.cache/linker-lab/usd/`) and compiles GPU kernels (about a
+(about a second, cached in `~/.cache/linker-sim-isaac/usd/`) and compiles GPU kernels (about a
 minute, cached too).
 
 ## What is in the scene
@@ -65,7 +65,7 @@ base frame with the base pose, as in the example below.
 ## Commanding the arms
 
 The real AR5 is commanded through the xCore SDK in one of two ways, and each arm action
-(`linker_lab.arm.ArmAction`) models both. The default environment has one per arm:
+(`linker_sim_isaac.arm.ArmAction`) models both. The default environment has one per arm:
 `left_arm`, `right_arm`, then the hands `left_hand`, `right_hand`, in this order in the
 action vector.
 
@@ -112,7 +112,7 @@ environment's first reset the previous command is home. An example: the left pal
 everything else holds.
 
 ```python
-from linker_lab import workstation
+from linker_sim_isaac import workstation
 import gymnasium as gym
 import torch
 from isaaclab.app import launch_simulation
@@ -140,7 +140,7 @@ with launch_simulation(cfg, {"headless": True}):
 
 ## Commanding the hands
 
-Each hand action (`linker_lab.hand.HandAction`) takes six targets, one per motor: thumb
+Each hand action (`linker_sim_isaac.hand.HandAction`) takes six targets, one per motor: thumb
 pitch, thumb yaw, index, middle, ring, pinky (`hand.SHAFTS`), in radians or, with
 `hand_action_cfg(side, normalized=True)`, in [-1, 1] over each joint's range. The other five
 finger joints follow through fixed couplings. `workstation.home_action(env)` converts home
@@ -177,12 +177,12 @@ cfg.episode_length_s = 5.0
 
 ## Saving and restoring
 
-`linker_lab.snapshot` saves the environment between two `env.step()` calls (one environment),
+`linker_sim_isaac.snapshot` saves the environment between two `env.step()` calls (one environment),
 for example the moment the hand has closed on an object, and restores it later, in the same
 process or a new one, without a reset: the arm continues its motion, the hand keeps its grip.
 
 ```python
-from linker_lab import snapshot
+from linker_sim_isaac import snapshot
 
 def save_moment(env, path):
     snapshot.save(snapshot.capture(env), path)  # about 40 KB, plus the observations
@@ -191,25 +191,25 @@ def back_to(env, path):
     return snapshot.restore(env, snapshot.load(path))  # the observations at that moment
 ```
 
-A snapshot restores into an environment made with the same linker-lab, the same package
+A snapshot restores into an environment made with the same linker-sim-isaac, the same package
 versions and the same configuration (it checks, and refuses otherwise, before changing
 anything). The control state, counters and simulated time come back exactly, the physics within
 float32 rounding; after that, runs drift apart slowly, as any two GPU runs do. The
 observations come back as they were captured, noise included, without being computed again.
 Camera sensor buffers and model parameters changed while running (by randomization
 events) are not restored.
-[api.md](api.md#linker_labsnapshot) lists what is saved and what is refused.
+[api.md](api.md#linker_sim_isaacsnapshot) lists what is saved and what is refused.
 
 ## Objects
 
-`linker_lab.objects` makes rigid objects from meshes: each mesh part collides as its convex
+`linker_sim_isaac.objects` makes rigid objects from meshes: each mesh part collides as its convex
 hull, the mass is yours (the centre of mass and inertia follow from it, or give them), and every
 object gets the same contact material (friction 1). `on_table` gives the position that rests an
 object on the table.
 
 ```python
 import trimesh
-from linker_lab import objects
+from linker_sim_isaac import objects
 
 mesh = trimesh.creation.box((0.05, 0.05, 0.05))
 parts = [(mesh.vertices, mesh.faces)]
@@ -223,7 +223,7 @@ Use the path to your own STL or OBJ file. `load_mesh` returns the parts list, re
 to `on_table` and `object_cfg`.
 
 ```python
-from linker_lab import objects
+from linker_sim_isaac import objects
 
 parts = objects.load_mesh("part.stl")
 ```
@@ -261,11 +261,11 @@ comparing runs across GPUs.
 
 ## LW-v0's files
 
-The robot's files come from linker-sim-assets, installed with linker-lab as the data package
+The robot's files come from linker-sim-assets, installed with linker-sim-isaac as the data package
 `linker-lw-v0` from its release tag `v1.0.0` (`assemblies/lw_v0/` and its parts, MJCF and
-URDF; `linker_lab.assets.path("lw_v0.xml")`). linker-sim-assets keeps LW-v0 the same robot
+URDF; `linker_sim_isaac.assets.path("lw_v0.xml")`). linker-sim-assets keeps LW-v0 the same robot
 throughout 1.x: the files' paths, the names of its bodies, joints, sites, cameras and drives, its
 physics, the controllers' constants, and the shape and place of its visual meshes. A 1.x release
 changes nothing that is simulated, so tasks and policies written for LW-v0 keep working. A
 change to LW-v0's physics or geometry comes only as a new robot or as linker-sim-assets 2.0.0,
-adopted in a linker-lab release of its own.
+adopted in a linker-sim-isaac release of its own.

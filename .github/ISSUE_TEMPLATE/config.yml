@@ -5,7 +5,7 @@ contact_links:
     about: Read the LW-v0 setup, environment, and API documentation.
   - name: Setup and troubleshooting
     url: https://github.com/linker-bot/linker-sim-isaac/blob/main/docs/getting-started.md
-    about: Follow the installation guide and run linker-lab doctor before opening an issue.
+    about: Follow the installation guide and run linker-sim-isaac doctor before opening an issue.
   - name: Security
     url: https://github.com/linker-bot/linker-sim-isaac/security
     about: Review the repository's security information and available reporting options.

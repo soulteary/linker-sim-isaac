@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 import pytest
 import yaml
 
-from linker_lab import __version__, cli, gallery
+from linker_sim_isaac import __version__, cli, gallery
 
 
 def test_every_entry_has_a_valid_manifest_for_this_version():
@@ -24,7 +24,7 @@ def make_entry(root, name="demo", content=b"weights", **changes):
     artifact.write_bytes(content)
     sha = hashlib.sha256(b"weights").hexdigest()
     data = dict(name=name, version="0.1.0", title="A demo", description="d", license="l",
-                linker_lab=">=0.1.0a1", artifacts={"weights.bin": {"url": artifact.as_uri(), "sha256": sha}})
+                linker_sim_isaac=">=0.1.0a1", artifacts={"weights.bin": {"url": artifact.as_uri(), "sha256": sha}})
     data.update(changes)
     data = {k: v for k, v in data.items() if v is not None}
     (root / name / "manifest.yaml").write_text(yaml.safe_dump(data))
@@ -56,8 +56,8 @@ def test_wrong_checksum_is_rejected_and_not_kept(fake_gallery):
 
 
 def test_unsupported_version_and_bad_manifests(fake_gallery):
-    make_entry(fake_gallery, "old", linker_lab="<0.1")
-    with pytest.raises(gallery.GalleryError, match="runs on linker-lab <0.1"):
+    make_entry(fake_gallery, "old", linker_sim_isaac="<0.1")
+    with pytest.raises(gallery.GalleryError, match="runs on linker-sim-isaac <0.1"):
         gallery.run("old")
     make_entry(fake_gallery, "nolicense", license=None)
     with pytest.raises(gallery.GalleryError, match="missing license"):
@@ -77,7 +77,7 @@ def test_cli_list_and_info(capsys):
 
 def test_load_registers_annotations_and_reloads_a_fresh_module(fake_gallery, monkeypatch):
     make_entry(fake_gallery, "typed")
-    module_name = "linker_lab_gallery_typed"
+    module_name = "linker_sim_isaac_gallery_typed"
     monkeypatch.setitem(sys.modules, module_name, None)
     (fake_gallery / "typed" / "play.py").write_text(
         "from __future__ import annotations\n"
@@ -96,7 +96,7 @@ def test_load_registers_annotations_and_reloads_a_fresh_module(fake_gallery, mon
 
 def test_failed_load_removes_partial_module_and_preserves_previous(fake_gallery, monkeypatch):
     make_entry(fake_gallery, "broken")
-    module_name = "linker_lab_gallery_broken"
+    module_name = "linker_sim_isaac_gallery_broken"
     monkeypatch.setitem(sys.modules, module_name, None)
     source = fake_gallery / "broken" / "play.py"
     good_source = source.read_text()

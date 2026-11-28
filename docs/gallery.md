@@ -4,13 +4,13 @@ The gallery is for trying pretrained policies on LW-v0, interactively, in the vi
 Measuring a policy belongs to the repository it was trained in; the gallery shows it.
 
 ```bash
-uv run linker-lab gallery list               # the entries
-uv run linker-lab gallery info ycb-grasp     # its description, licences and files
-uv run linker-lab gallery run ycb-grasp      # open it
+uv run linker-sim-isaac gallery list               # the entries
+uv run linker-sim-isaac gallery info ycb-grasp     # its description, licences and files
+uv run linker-sim-isaac gallery run ycb-grasp      # open it
 ```
 
-`run` checks that the entry is made for this linker-lab version, downloads its files into
-`~/.cache/linker-lab/gallery/<entry>/` (or under `XDG_CACHE_HOME`), checks each against its sha256 and opens the
+`run` checks that the entry is made for this linker-sim-isaac version, downloads its files into
+`~/.cache/linker-sim-isaac/gallery/<entry>/` (or under `XDG_CACHE_HOME`), checks each against its sha256 and opens the
 entry's scene. It returns when you close the window.
 
 ## The files
@@ -22,7 +22,7 @@ their URLs and sha256. A download goes to a temporary file and is moved into the
 when its sha256 matches, so an interrupted or wrong download never replaces a good file.
 
 Without internet access on the machine, download the files elsewhere and copy them into
-`~/.cache/linker-lab/gallery/<entry>/` (with `XDG_CACHE_HOME` set, under that directory
+`~/.cache/linker-sim-isaac/gallery/<entry>/` (with `XDG_CACHE_HOME` set, under that directory
 instead of `~/.cache`); `run` uses them if their sha256 matches.
 
 ## `ycb-grasp`: grasp YCB objects with the left hand
@@ -61,7 +61,7 @@ licences of the weights and the objects.
 
 Develop an entry in the `policy-gallery/` folder of a clone of this repository. Editable installs
 read entries from that folder, so changes are visible without rebuilding. Wheels include
-the gallery inside the `linker_lab` package; ordinary installs read those packaged entries.
+the gallery inside the `linker_sim_isaac` package; ordinary installs read those packaged entries.
 Rebuild and reinstall the package to distribute a new or changed entry:
 
 ```
@@ -78,18 +78,18 @@ policy-gallery/<entry>/
 | `version` | the entry's own version |
 | `title`, `description` | what someone trying it sees |
 | `license` | the licences of the weights and of any data (objects, scenes) |
-| `linker_lab` | the linker-lab versions it runs on, a version range such as `">=2.0,<3"` |
+| `linker_sim_isaac` | the linker-sim-isaac versions it runs on, a version range such as `">=2.0,<3"` |
 | `artifacts` | file name → `url` and `sha256` of each file it needs (weights, object data) |
 
 `play.py` defines `run(artifacts)`, called with each artifact's local path; it owns
 everything else: its scene (usually an `LWv0EnvCfg` with its own objects and actions), the
 policy's observations and actions, and the episode. The runner interprets nothing else.
-An entry that imports Isaac Lab prepares the engine first, with `linker_lab.bootstrap()` or
-by importing `linker_lab.workstation`.
+An entry that imports Isaac Lab prepares the engine first, with `linker_sim_isaac.bootstrap()` or
+by importing `linker_sim_isaac.workstation`.
 
 Keep the files out of git: publish them where `url` points, for example as release assets.
 Check that each URL serves the matching file before distributing the manifest.
 
 To try an entry before its files are published, put each file where the runner keeps it
-(`linker_lab.gallery.artifact_path(entry, file)`, i.e.
-`~/.cache/linker-lab/gallery/<entry>/<file>`): a file there is used if its sha256 matches.
+(`linker_sim_isaac.gallery.artifact_path(entry, file)`, i.e.
+`~/.cache/linker-sim-isaac/gallery/<entry>/<file>`): a file there is used if its sha256 matches.

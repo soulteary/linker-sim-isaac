@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a problem with linker-lab (LW-v0 on Isaac Lab)
+about: Report a problem with linker-sim-isaac (LW-v0 on Isaac Lab)
 title: "[Bug] "
 labels:
   - bug
@@ -29,7 +29,7 @@ assignees: []
 
 - **OS** (e.g. Ubuntu 22.04):
 - **Python version** (3.12.x):
-- **Installation diagnostics** (paste the output of `uv run linker-lab doctor`):
+- **Installation diagnostics** (paste the output of `uv run linker-sim-isaac doctor`):
 - **Commit** (`git rev-parse HEAD`):
 - **Command or task** (`play`, `gallery`, or your own task):
 - **GPU** (model + driver, if relevant):

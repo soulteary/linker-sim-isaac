@@ -7,7 +7,7 @@ import pytest
 import trimesh
 from pxr import Usd, UsdPhysics
 
-from linker_lab import objects
+from linker_sim_isaac import objects
 
 
 @pytest.fixture

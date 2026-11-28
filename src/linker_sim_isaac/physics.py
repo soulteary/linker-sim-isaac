@@ -1,19 +1,19 @@
 """The physics settings LW-v0 is simulated with.
 
 The robot's own properties (masses, joint limits, drives, collision shapes and the
-contact settings of its surfaces) are in LW-v0's files (``linker_lab.assets``); the contact
-settings of objects are in ``linker_lab.objects``. The time step and the solver settings are
+contact settings of its surfaces) are in LW-v0's files (``linker_sim_isaac.assets``); the contact
+settings of objects are in ``linker_sim_isaac.objects``. The time step and the solver settings are
 read from the ``<option>`` and ``<size>`` of ``lw_v0.xml``, so Isaac Lab runs what every MuJoCo
 tool loading that file runs: 480 Hz, implicit-fast, Newton solver with 30 iterations and 50
 line-search iterations, elliptic cone, impratio 10, multi-CCD, 256 contacts and 512
-constraint rows per environment. Only the decision rate is linker-lab's own.
+constraint rows per environment. Only the decision rate is linker-sim-isaac's own.
 
 Importing this module imports nothing from Isaac Lab.
 """
 
 from __future__ import annotations
 
-from linker_lab import assets
+from linker_sim_isaac import assets
 
 __all__ = ["PHYSICS_HZ", "DECISION_HZ", "DECIMATION", "SOLVER", "simulation_cfg"]
 

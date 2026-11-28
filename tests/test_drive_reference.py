@@ -20,8 +20,8 @@ import numpy as np
 import pytest
 import torch
 
-from linker_lab import arm, assets
-from linker_lab.hand import HandMotor
+from linker_sim_isaac import arm, assets
+from linker_sim_isaac.hand import HandMotor
 
 REFERENCE = np.load(Path(__file__).with_name("data") / "drive_reference.npz")
 SIDES = ("left", "right")

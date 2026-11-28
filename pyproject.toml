@@ -3,15 +3,15 @@ requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [project]
-name = "linker-lab"
+name = "linker-sim-isaac"
 version = "2.0.0"
 description = "The Linker LW-v0 workstation for Isaac Lab"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-license-files = ["LICENSE", "NOTICE", "src/linker_lab/NOTICE"]
+license-files = ["LICENSE", "NOTICE", "src/linker_sim_isaac/NOTICE"]
 authors = [{name = "Ryan Zhou"}]
-# The engine is pinned exactly; see src/linker_lab/engine.py for why it differs from
+# The engine is pinned exactly; see src/linker_sim_isaac/engine.py for why it differs from
 # the Newton version Isaac Lab 3.0 was released with.
 dependencies = [
     "isaaclab==3.0.0",
@@ -27,13 +27,13 @@ dependencies = [
     "scipy>=1.11",
     "trimesh>=4",
     # LW-v0's robot files (data only), from linker-sim-assets at a release tag; converted to
-    # USD on first use (linker_lab.assets).
+    # USD on first use (linker_sim_isaac.assets).
     "linker-lw-v0 @ git+https://github.com/linker-bot/linker-sim-assets@v1.0.0",
     "mujoco-usd-converter==0.9.1",
 ]
 
 [project.scripts]
-linker-lab = "linker_lab.cli:main"
+linker-sim-isaac = "linker_sim_isaac.cli:main"
 
 [dependency-groups]
 dev = [
@@ -66,10 +66,10 @@ torchvision = { index = "pytorch-cu130" }
 allow-direct-references = true  # linker-lw-v0 from git
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/linker_lab"]
+packages = ["src/linker_sim_isaac"]
 
 [tool.hatch.build.targets.wheel.force-include]
-"policy-gallery" = "linker_lab/_gallery"
+"policy-gallery" = "linker_sim_isaac/_gallery"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -84,7 +84,7 @@ target-version = "py312"
 select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.ruff.lint.per-file-ignores]
-# Applies linker_lab.bootstrap() before its Isaac Lab imports.
-"src/linker_lab/{arm,hand,playground,snapshot,workstation}.py" = ["E402"]
-# Gallery entries apply linker_lab.bootstrap() the same way.
+# Applies linker_sim_isaac.bootstrap() before its Isaac Lab imports.
+"src/linker_sim_isaac/{arm,hand,playground,snapshot,workstation}.py" = ["E402"]
+# Gallery entries apply linker_sim_isaac.bootstrap() the same way.
 "policy-gallery/*/play.py" = ["E402"]

@@ -27,11 +27,11 @@ def _git(repository: Path, *arguments: str) -> str:
 def _release_repository(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[str, Path]:
-    package = tmp_path / "src" / "linker_lab"
+    package = tmp_path / "src" / "linker_sim_isaac"
     package.mkdir(parents=True)
     project = tmp_path / "pyproject.toml"
     project.write_text(
-        '[project]\nname = "linker-lab"\nversion = "1.2.3"\n', encoding="utf-8"
+        '[project]\nname = "linker-sim-isaac"\nversion = "1.2.3"\n', encoding="utf-8"
     )
     package_file = package / "__init__.py"
     package_file.write_text('__version__ = "1.2.3"\n', encoding="utf-8")
@@ -88,8 +88,8 @@ def test_prepare_release_creates_versioned_archive_and_checksum(
     assert checksums.read_text(encoding="utf-8") == f"{digest}  {archive.name}\n"
     with tarfile.open(archive) as source:
         names = source.getnames()
-    assert "linker-lab-1.2.3/pyproject.toml" in names
-    assert "linker-lab-1.2.3/simulation-run.json" not in names
+    assert "linker-sim-isaac-1.2.3/pyproject.toml" in names
+    assert "linker-sim-isaac-1.2.3/simulation-run.json" not in names
 
 
 def test_release_tag_must_be_annotated(

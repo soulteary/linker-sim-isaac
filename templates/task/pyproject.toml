@@ -1,5 +1,5 @@
-# Your task's own project. It installs linker-lab (and with it Isaac Lab and the pinned
-# engine) from linker-lab's release tag in linker-sim-isaac; `uv sync` creates .venv.
+# Your task's own project. It installs linker-sim-isaac (and with it Isaac Lab and the pinned
+# engine) from linker-sim-isaac's release tag in linker-sim-isaac; `uv sync` creates .venv.
 [build-system]
 requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
@@ -9,7 +9,7 @@ name = "my-task"
 version = "0.1.0"
 description = "A task on the Linker LW-v0 workstation"
 requires-python = ">=3.12,<3.13"
-dependencies = ["linker-lab"]
+dependencies = ["linker-sim-isaac"]
 
 # Isaac Lab's command line (`isaaclab train`, `isaaclab play`) imports this package to find
 # its tasks.
@@ -17,16 +17,16 @@ dependencies = ["linker-lab"]
 my_task = "my_task"
 
 [tool.uv.sources]
-linker-lab = { git = "https://github.com/linker-bot/linker-sim-isaac.git", tag = "v2.0.0" }
+linker-sim-isaac = { git = "https://github.com/linker-bot/linker-sim-isaac.git", tag = "v2.0.0" }
 
 [tool.uv]
-# The platforms linker-lab supports.
+# The platforms linker-sim-isaac supports.
 environments = [
     "sys_platform == 'linux' and platform_machine == 'x86_64'",
     "sys_platform == 'linux' and platform_machine == 'aarch64'",
 ]
-# linker-lab pins a newer physics engine than Isaac Lab 3.0 asks for (see linker-lab's
-# pyproject.toml); a project depending on linker-lab repeats this override.
+# linker-sim-isaac pins a newer physics engine than Isaac Lab 3.0 asks for (see linker-sim-isaac's
+# pyproject.toml); a project depending on linker-sim-isaac repeats this override.
 override-dependencies = ["newton[sim]==1.8.0"]
 # A pre-release that LW-v0's USD conversion needs; uv allows pre-releases of indirect
 # dependencies only when the project names them.

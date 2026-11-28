@@ -9,10 +9,10 @@ def test_import_does_not_load_optional_runtimes():
         [
             sys.executable,
             "-c",
-            "import sys, linker_lab; "
+            "import sys, linker_sim_isaac; "
             "assert not any(m.split('.')[0] in "
             "{'isaaclab', 'isaacsim', 'torch', 'warp', 'gymnasium'} for m in sys.modules); "
-            "print(linker_lab.__version__)",
+            "print(linker_sim_isaac.__version__)",
         ],
         check=True,
         capture_output=True,

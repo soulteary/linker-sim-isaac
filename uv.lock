@@ -1098,7 +1098,12 @@ wheels = [
 ]
 
 [[package]]
-name = "linker-lab"
+name = "linker-lw-v0"
+version = "1.0.0"
+source = { git = "https://github.com/linker-bot/linker-sim-assets?rev=v1.0.0#a2fe2a7918392664b3459e15a5f755789ae8d1af" }
+
+[[package]]
+name = "linker-sim-isaac"
 version = "2.0.0"
 source = { editable = "." }
 dependencies = [
@@ -1149,11 +1154,6 @@ dev = [
     { name = "ruckig", specifier = "==0.19.4" },
     { name = "ruff", specifier = ">=0.11,<1" },
 ]
-
-[[package]]
-name = "linker-lw-v0"
-version = "1.0.0"
-source = { git = "https://github.com/linker-bot/linker-sim-assets?rev=v1.0.0#a2fe2a7918392664b3459e15a5f755789ae8d1af" }
 
 [[package]]
 name = "llvmlite"

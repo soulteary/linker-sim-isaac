@@ -1,6 +1,6 @@
-"""The physics engine linker-lab runs on, and the glue Isaac Lab 3.0 needs to run on it.
+"""The physics engine linker-sim-isaac runs on, and the glue Isaac Lab 3.0 needs to run on it.
 
-Isaac Lab 3.0 was released against Newton 1.6.1. linker-lab pins Newton 1.8.0 with
+Isaac Lab 3.0 was released against Newton 1.6.1. linker-sim-isaac pins Newton 1.8.0 with
 MuJoCo-Warp 3.17 (exact versions: this package's requirements in ``pyproject.toml``),
 because LW-v0 depends on physics added after 1.6, such as the implicit gyroscopic
 term for free objects.
@@ -8,12 +8,12 @@ term for free objects.
 Newton 1.8 removed or renamed a few things Isaac Lab 3.0 still uses, and changed one
 viewer interface Isaac Lab's Newton viewer wraps; its viewer also spends most of each frame
 re-reading unchanged shape colours. Each is patched by one function below, applied by
-:func:`apply` (called by ``linker_lab.bootstrap()``) before the rest of Isaac Lab is
+:func:`apply` (called by ``linker_sim_isaac.bootstrap()``) before the rest of Isaac Lab is
 imported. Nothing here changes numerical behaviour. Only what
 rigid-body scenes such as LW-v0 need is patched: Isaac Lab's deformable bodies
 (cloth, soft bodies) and its native Newton actuators do not work with this engine.
 
-This module also holds the checks ``linker-lab doctor`` runs.
+This module also holds the checks ``linker-sim-isaac doctor`` runs.
 
 Delete the patches when an Isaac Lab release depends on Newton >= 1.8.
 """
@@ -118,9 +118,9 @@ def _viewer_unchanged_colors() -> None:
         if colors is None:
             return _sync_shape_colors_from_model.newton_sync(self)
         current = colors.numpy()
-        last = getattr(self, "_linker_lab_synced_colors", None)
+        last = getattr(self, "_linker_sim_isaac_synced_colors", None)
         if self.model_changed or last is None or not np.array_equal(current, last):
-            self._linker_lab_synced_colors = current
+            self._linker_sim_isaac_synced_colors = current
             _sync_shape_colors_from_model.newton_sync(self)
 
     _sync_shape_colors_from_model.newton_sync = ViewerBase._sync_shape_colors_from_model
@@ -141,7 +141,7 @@ _SIMULATION_MODULES = ("isaaclab.actuators", "isaaclab.sim", "isaaclab_newton", 
 ``isaaclab.actuators.newton.adapter`` imports ``newton.actuators.Clamping`` by name when it is
 imported; every other patched name is looked up when it is used. Isaac Lab's command line
 (``isaaclab train``, ``isaaclab play``) imports only its own command modules before it loads
-the task packages, so a task package can call ``linker_lab.bootstrap()`` when imported."""
+the task packages, so a task package can call ``linker_sim_isaac.bootstrap()`` when imported."""
 
 
 def apply() -> list[str]:
@@ -149,7 +149,7 @@ def apply() -> list[str]:
     global _apply_failed
     if _apply_failed:
         raise RuntimeError(
-            "linker_lab.bootstrap() previously failed; restart the process before retrying"
+            "linker_sim_isaac.bootstrap() previously failed; restart the process before retrying"
         )
     if len(_applied) == len(_PATCHES):
         return list(_applied)
@@ -160,8 +160,8 @@ def apply() -> list[str]:
     )
     if early:
         raise RuntimeError(
-            "linker_lab.bootstrap() must be called before Isaac Lab is imported "
-            f"(already imported: {', '.join(early[:3])}). Import linker_lab first in your script."
+            "linker_sim_isaac.bootstrap() must be called before Isaac Lab is imported "
+            f"(already imported: {', '.join(early[:3])}). Import linker_sim_isaac first in your script."
         )
     try:
         for patch in _PATCHES:
@@ -189,11 +189,11 @@ class Check:
 
 
 def check_versions() -> list[Check]:
-    """Every package linker-lab pins is installed at the pinned version."""
+    """Every package linker-sim-isaac pins is installed at the pinned version."""
     from packaging.requirements import Requirement
 
     checks = []
-    for line in metadata.requires("linker-lab") or []:
+    for line in metadata.requires("linker-sim-isaac") or []:
         req = Requirement(line)
         if req.marker is not None and not req.marker.evaluate({"extra": ""}):
             continue
@@ -240,7 +240,7 @@ def check_simulation(seconds: float = 1.0, num_envs: int = 4) -> Check:
     import time
 
     try:
-        from linker_lab import objects, workstation  # converts LW-v0 to USD on first use
+        from linker_sim_isaac import objects, workstation  # converts LW-v0 to USD on first use
     except (FileNotFoundError, RuntimeError) as error:
         return Check("simulation", False, str(error))
 

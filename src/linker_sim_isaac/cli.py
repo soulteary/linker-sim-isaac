@@ -1,4 +1,4 @@
-"""The ``linker-lab`` command."""
+"""The ``linker-sim-isaac`` command."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ import sys
 
 def doctor() -> int:
     """Check the installation: versions, GPU, engine patches, and a short simulation."""
-    import linker_lab
-    from linker_lab import engine
+    import linker_sim_isaac
+    from linker_sim_isaac import engine
 
     def check(name, callback):
         try:
@@ -26,13 +26,13 @@ def doctor() -> int:
     checks.append(check("gpu", engine.check_gpu))
     if versions_ok:
         def prepare_engine():
-            linker_lab.bootstrap()
+            linker_sim_isaac.bootstrap()
             return engine.check_patches()
 
         checks.append(check("engine patches", prepare_engine))
     if all(c.ok for c in checks):
         checks.append(check("simulation", engine.check_simulation))
-    print(f"\nlinker-lab {linker_lab.__version__} doctor")
+    print(f"\nlinker-sim-isaac {linker_sim_isaac.__version__} doctor")
     for c in checks:
         print(f"  [{'ok' if c.ok else 'FAIL'}] {c.name}: {c.detail}")
     ok = all(c.ok for c in checks)
@@ -45,7 +45,7 @@ def play(selftest: bool = False, out: str | None = None) -> int:
     import json
     from pathlib import Path
 
-    from linker_lab import playground
+    from linker_sim_isaac import playground
 
     if not selftest:
         return playground.run()
@@ -57,7 +57,7 @@ def play(selftest: bool = False, out: str | None = None) -> int:
 
 def gallery(command: str, name: str | None) -> int:
     """Pretrained policies on LW-v0: list the entries, show one, or open one in the viewer."""
-    from linker_lab import gallery as g
+    from linker_sim_isaac import gallery as g
 
     if command == "list":
         for entry in g.entries():
@@ -72,7 +72,7 @@ def gallery(command: str, name: str | None) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="linker-lab", description=__doc__)
+    parser = argparse.ArgumentParser(prog="linker-sim-isaac", description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("doctor", help=doctor.__doc__)
     play_parser = commands.add_parser("play", help=play.__doc__)

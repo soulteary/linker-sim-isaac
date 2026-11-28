@@ -10,7 +10,7 @@ import json
 
 import torch
 
-from linker_lab import assets, workstation  # bootstraps the engine
+from linker_sim_isaac import assets, workstation  # bootstraps the engine
 
 
 def main() -> dict:

@@ -1,6 +1,6 @@
 """My task: pick up a box with the left hand (an example to change into your own task).
 
-LW-v0's default environment (``linker_lab.workstation.LWv0EnvCfg``) is the workstation: the
+LW-v0's default environment (``linker_sim_isaac.workstation.LWv0EnvCfg``) is the workstation: the
 scene, the physics, an action per arm and hand, joint-state observations and a reset to home.
 A task subclasses it and adds what makes it a task. This one adds:
 
@@ -31,7 +31,7 @@ from isaaclab.managers import (
 )
 from isaaclab.utils import configclass
 
-from linker_lab import objects, workstation
+from linker_sim_isaac import objects, workstation
 
 # ---------------------------------------------------------------------------- the box
 

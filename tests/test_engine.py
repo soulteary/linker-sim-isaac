@@ -6,7 +6,7 @@ import types
 
 import pytest
 
-from linker_lab import engine
+from linker_sim_isaac import engine
 
 
 def run(code: str) -> str:
@@ -17,7 +17,7 @@ def run(code: str) -> str:
 
 def test_import_starts_nothing():
     out = run(
-        "import sys, linker_lab, linker_lab.engine, linker_lab.cli;"
+        "import sys, linker_sim_isaac, linker_sim_isaac.engine, linker_sim_isaac.cli;"
         "print(sorted(m for m in ('isaaclab', 'newton', 'warp', 'torch', 'pxr') if m in sys.modules))"
     )
     assert out == "[]"
@@ -40,7 +40,7 @@ def test_apply_refuses_after_isaaclab_import(monkeypatch):
 def test_apply_after_isaac_labs_command_line():
     """``isaaclab train`` imports its command modules, then the task packages, which bootstrap."""
     out = run(
-        "import isaaclab.cli, linker_lab; linker_lab.bootstrap();"
+        "import isaaclab.cli, linker_sim_isaac; linker_sim_isaac.bootstrap();"
         "import isaaclab.actuators.newton.adapter; print('ok')"
     )
     assert out == "ok"
@@ -48,7 +48,7 @@ def test_apply_after_isaac_labs_command_line():
 
 def test_patches_restore_the_names_isaac_lab_reads():
     out = run(
-        "import linker_lab; linker_lab.bootstrap();"
+        "import linker_sim_isaac; linker_sim_isaac.bootstrap();"
         "import newton, newton.actuators as a;"
         "b = newton.ModelBuilder();"
         "print(a.Clamping is a.ClampingBase,"
@@ -59,8 +59,8 @@ def test_patches_restore_the_names_isaac_lab_reads():
 
 def test_bootstrap_is_idempotent():
     out = run(
-        "import linker_lab; from linker_lab import engine;"
-        "linker_lab.bootstrap(); linker_lab.bootstrap(); print(engine.applied())"
+        "import linker_sim_isaac; from linker_sim_isaac import engine;"
+        "linker_sim_isaac.bootstrap(); linker_sim_isaac.bootstrap(); print(engine.applied())"
     )
     assert out == (
         "['actuator_clamping_alias', 'deformable_label_aliases', 'viewer_image_logger',"
@@ -70,7 +70,7 @@ def test_bootstrap_is_idempotent():
 
 def test_cli_help():
     out = subprocess.run(
-        [sys.executable, "-m", "linker_lab.cli", "--help"], capture_output=True, text=True, check=True
+        [sys.executable, "-m", "linker_sim_isaac.cli", "--help"], capture_output=True, text=True, check=True
     ).stdout
     assert "doctor" in out and "play" in out
 
@@ -78,7 +78,7 @@ def test_cli_help():
 def test_viewer_keeps_newtons_image_logger_draw():
     """Isaac Lab's viewer no longer replaces Newton 1.8's ``ImageLogger.draw``."""
     out = run(
-        "import linker_lab, types; linker_lab.bootstrap();"
+        "import linker_sim_isaac, types; linker_sim_isaac.bootstrap();"
         "from isaaclab_visualizers.newton.newton_visualizer import _NewtonViewerUIMixin as M;"
         "from newton._src.viewer.image_logger import ImageLogger;"
         "v = types.SimpleNamespace(_image_logger=ImageLogger.__new__(ImageLogger));"
@@ -91,7 +91,7 @@ def test_viewer_keeps_newtons_image_logger_draw():
 def test_viewer_syncs_colors_only_when_they_change():
     """Unchanged colours are not synced again; changed colours and a rebuilt viewer are."""
     out = run(
-        "import linker_lab, types; linker_lab.bootstrap();"
+        "import linker_sim_isaac, types; linker_sim_isaac.bootstrap();"
         "import numpy as np, warp as wp;"
         "from newton._src.viewer.viewer import ViewerBase;"
         "sync = ViewerBase._sync_shape_colors_from_model; calls = [];"

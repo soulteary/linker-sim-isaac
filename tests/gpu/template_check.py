@@ -13,16 +13,16 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).parents[2] / "templates" / "task" / "src"))
 
-import linker_lab  # noqa: E402
+import linker_sim_isaac  # noqa: E402
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 import gymnasium as gym  # noqa: E402
 import torch  # noqa: E402
 from isaaclab.app import launch_simulation  # noqa: E402
 from my_task import env_cfg  # noqa: E402  (importing my_task registers My-Task-LW-v0)
 
-from linker_lab import workstation  # noqa: E402
+from linker_sim_isaac import workstation  # noqa: E402
 
 
 def main() -> dict:

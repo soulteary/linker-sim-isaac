@@ -1,6 +1,6 @@
 """Grasp YCB objects with the left hand (gallery entry ``ycb-grasp``).
 
-``linker-lab gallery run ycb-grasp`` opens one LW-v0 workstation in the viewer. Pick an
+``linker-sim-isaac gallery run ycb-grasp`` opens one LW-v0 workstation in the viewer. Pick an
 object in the panel and press **Drop**: it is placed at a random spot in the region of the
 table the policy was trained on (the left half: ``demo/region`` in ``policy.npz``), turned
 at random about the vertical, in one of its resting poses chosen at random. Once it has come to rest, press **Grasp**: the policy looks at it once (512
@@ -52,9 +52,9 @@ each decision, so none falls more than about 2 m and none ever touches anything.
 
 from __future__ import annotations
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 import math
 import time
@@ -77,8 +77,8 @@ from isaaclab.utils.math import (
 )
 from torch import nn
 
-from linker_lab import assets, objects, workstation
-from linker_lab.arm import project
+from linker_sim_isaac import assets, objects, workstation
+from linker_sim_isaac.arm import project
 
 STATE_DIM = 59
 POINTS = 512

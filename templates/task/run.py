@@ -6,9 +6,9 @@
 Replace the action (``workstation.home_action``) with your own controller or policy.
 """
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()  # first: prepares the physics engine for Isaac Lab
+linker_sim_isaac.bootstrap()  # first: prepares the physics engine for Isaac Lab
 
 import argparse  # noqa: E402
 
@@ -16,7 +16,7 @@ import gymnasium as gym  # noqa: E402
 from isaaclab.app import launch_simulation  # noqa: E402
 from my_task.env_cfg import MyTaskEnvCfg  # noqa: E402  (importing my_task registers the task)
 
-from linker_lab import workstation  # noqa: E402
+from linker_sim_isaac import workstation  # noqa: E402
 
 parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 parser.add_argument("--num_envs", type=int, default=None)

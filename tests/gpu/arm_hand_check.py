@@ -44,7 +44,7 @@ import gymnasium as gym
 import numpy as np
 import torch
 
-from linker_lab import arm, workstation  # workstation bootstraps the engine
+from linker_sim_isaac import arm, workstation  # workstation bootstraps the engine
 
 REFERENCE = pathlib.Path(__file__).parents[1] / "data" / "drive_reference.npz"
 

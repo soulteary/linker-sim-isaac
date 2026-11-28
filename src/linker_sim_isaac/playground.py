@@ -1,6 +1,6 @@
-"""The playground: drive LW-v0 by hand in Isaac Lab's Newton viewer (``linker-lab play``).
+"""The playground: drive LW-v0 by hand in Isaac Lab's Newton viewer (``linker-sim-isaac play``).
 
-The scene is the default environment (``linker_lab.workstation``) with a 5 cm box on the
+The scene is the default environment (``linker_sim_isaac.workstation``) with a 5 cm box on the
 table and a floor at the foot of the support, so objects knocked off the table stay in
 view. You move a goal for the palm point (``workstation.PALM_OFFSET``) of one arm at a
 time; the arm follows through ``ArmAction(command="pose", frame="palm")`` with
@@ -31,14 +31,14 @@ contacts and the simulation speed.
 The viewer is a :class:`PlaygroundVisualizer`, a subclass of Isaac Lab's Newton GL
 visualizer selected through the visualizer config; Isaac Lab is not patched.
 
-Importing this module applies ``linker_lab.bootstrap()``, so import it before Isaac Lab.
+Importing this module applies ``linker_sim_isaac.bootstrap()``, so import it before Isaac Lab.
 """
 
 from __future__ import annotations
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 import json
 import time
@@ -52,7 +52,7 @@ from isaaclab.utils import configclass
 from isaaclab_visualizers.newton import NewtonGLVisualizer, NewtonGLVisualizerCfg
 from scipy.spatial.transform import Rotation
 
-from linker_lab import hand, objects, physics, workstation
+from linker_sim_isaac import hand, objects, physics, workstation
 
 JOG_SPEED = (0.1, 0.5)
 """Speed of the goal while a key is held: [m/s], [rad/s]."""

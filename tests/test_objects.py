@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import trimesh
 
-from linker_lab import objects
+from linker_sim_isaac import objects
 
 
 def box(size, offset=(0.0, 0.0, 0.0)):

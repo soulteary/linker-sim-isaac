@@ -60,14 +60,14 @@ Interventions are counted per environment in ``env.extras["arm_limit_hits"][asse
 or the jerk was exceeded), so a policy relying on infeasible motion is visible. ``limits=None`` turns
 all of this off; it needs ``interpolation=False``, as the generator *is* the limits.
 
-Importing this module applies ``linker_lab.bootstrap()``, so import it before Isaac Lab.
+Importing this module applies ``linker_sim_isaac.bootstrap()``, so import it before Isaac Lab.
 """
 
 from __future__ import annotations
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 from dataclasses import MISSING
 
@@ -76,7 +76,7 @@ import warp as wp
 from isaaclab.managers import ActionTerm, ActionTermCfg
 from isaaclab.utils import configclass
 
-from linker_lab import assets
+from linker_sim_isaac import assets
 
 __all__ = [
     "ArmAction",
@@ -412,7 +412,7 @@ def torque_guard(requested, q, qd, kp, kd, cap, joints, out=None, margin: float 
 
     ``q``, ``qd``, ``kp``, ``kd``, ``cap`` are the articulation's float32 joint arrays (N, J)
     (Warp arrays or torch tensors); ``joints`` (K, int32) selects the driven columns: the
-    arm's seven, or a hand's six (``linker_lab.hand.HandAction``).
+    arm's seven, or a hand's six (``linker_sim_isaac.hand.HandAction``).
     """
     wp.init()  # no-op once Warp is initialized
     out = torch.empty_like(requested) if out is None else out
@@ -620,7 +620,7 @@ def rate_limit(q, v, last, vmax, amax, jmax, dt: float, lower=None, upper=None):
 
 class ArmAction(ActionTerm):
     """Joint or pose commands for one AR5 arm, through the trajectory generator or the
-    Hermite stream, into the servo model. See :mod:`linker_lab.arm`."""
+    Hermite stream, into the servo model. See :mod:`linker_sim_isaac.arm`."""
 
     cfg: ArmActionCfg
 
@@ -781,7 +781,7 @@ class ArmAction(ActionTerm):
             self._raw[rows] = 0
             self._raw[rows, :7] = q.float()
 
-    # -- state, for linker_lab.snapshot
+    # -- state, for linker_sim_isaac.snapshot
 
     def get_state(self) -> dict:
         """Everything this term carries from one decision to the next (copies): the generator's
@@ -885,7 +885,7 @@ def check_state(current: dict, state: dict, owner: str) -> None:
 
 @configclass
 class ArmActionCfg(ActionTermCfg):
-    """:class:`ArmAction`. ``linker_lab.workstation.arm_action_cfg`` fills in the names."""
+    """:class:`ArmAction`. ``linker_sim_isaac.workstation.arm_action_cfg`` fills in the names."""
 
     class_type: type = ArmAction
     joint_names: list[str] = MISSING

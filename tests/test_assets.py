@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from linker_lab import assets
+from linker_sim_isaac import assets
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def test_conversion_writes_the_newton_settings(cache, part):
     from pxr import Usd, UsdPhysics
 
     usd = assets.usd(part)
-    assert usd.is_relative_to(cache / "linker-lab" / "usd")
+    assert usd.is_relative_to(cache / "linker-sim-isaac" / "usd")
     stage = Usd.Stage.Open(str(usd))
     colliders = [p for p in stage.Traverse() if p.HasAPI(UsdPhysics.MeshCollisionAPI)]
     assert all(p.GetAttribute("newton:maxHullVertices").Get() == -1 for p in colliders)
@@ -70,7 +70,7 @@ def test_the_work_surface_is_green(cache):
     from PIL import Image
     from pxr import Usd, UsdGeom, UsdShade
 
-    from linker_lab import objects
+    from linker_sim_isaac import objects
 
     green, grey = (0x2E, 0x7D, 0x5B), (0xCB, 0xCB, 0xCB)
     usd = assets.usd("support")
@@ -148,14 +148,14 @@ def test_the_installed_files_are_the_pinned_release():
 @pytest.mark.parametrize("side", ["left", "right"])
 def test_motor_constants_and_derived_passive_damping(side):
     """motor.yaml read for one hand; the passive damping derived from the robot files gives
-    the values linker-lab used before they were data (thumb flexion 4 + 0.4 × 1.86²,
+    the values linker-sim-isaac used before they were data (thumb flexion 4 + 0.4 × 1.86²,
     thumb yaw 24 − 20, fingers 4 + 0.4 × 0.89²), exactly."""
     motor = assets.motor(side)
     s = side[0]
     assert motor["shafts"] == tuple(
         f"hand_{s}h_{j}"
         for j in ("thumb_cmc_pitch", "thumb_cmc_yaw", "index_mcp_pitch", "middle_mcp_pitch", "ring_mcp_pitch", "pinky_mcp_pitch")
-    )  # linker_lab.hand.SHAFTS order
+    )  # linker_sim_isaac.hand.SHAFTS order
     assert motor["motor_stiffness"] == 600.0 and motor["speed_limit"] == 1.0
     assert motor["advancing_cap"] == (5.0, 3.0, 5.0, 5.0, 5.0, 5.0)
     assert motor["output_damping"] == (40.0, 20.0, 40.0, 40.0, 40.0, 40.0)

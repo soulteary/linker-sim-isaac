@@ -25,7 +25,7 @@ coupled finger joints follow their actuated joints through equality constraints 
 LW-v0's files.
 
 :class:`HandAction` passes each physics step's target through the arm's torque guard
-(:func:`linker_lab.arm.torque_guard`): the drive's torque ``Kp·(target − q) − kd·q̇`` stays
+(:func:`linker_sim_isaac.arm.torque_guard`): the drive's torque ``Kp·(target − q) − kd·q̇`` stays
 1 N·m (``TORQUE_GUARD_MARGIN``) within the joint's force limit, so a drive is never asked for
 more than it can give. On MuJoCo 4 a drive held at its limit loses its implicit damping and
 oscillates there, and the motor model, reading that as a load, would stop the shaft for good;
@@ -33,19 +33,19 @@ the guard keeps every MuJoCo version on the same physics (motor model
 ``geared-shaft-v1``).
 
 The stiffness Kp and the shaft range are read from LW-v0's files (the joints' drive gains and
-position limits); the motor's own constants from ``hands/o6/motor.yaml`` (``linker_lab.assets.motor``,
+position limits); the motor's own constants from ``hands/o6/motor.yaml`` (``linker_sim_isaac.assets.motor``,
 which also derives the passive damping each shaft sees from LW-v0's files).
 
 Presets (:data:`PRESETS`, shaft targets in rad) are the hand poses used by the playground.
 
-Importing this module applies ``linker_lab.bootstrap()``, so import it before Isaac Lab.
+Importing this module applies ``linker_sim_isaac.bootstrap()``, so import it before Isaac Lab.
 """
 
 from __future__ import annotations
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 from dataclasses import MISSING
 
@@ -53,7 +53,7 @@ import torch
 from isaaclab.managers import ActionTerm, ActionTermCfg
 from isaaclab.utils import configclass
 
-from linker_lab import arm
+from linker_sim_isaac import arm
 
 __all__ = ["HandAction", "HandActionCfg", "SHAFTS", "PRESETS", "THUMB_OPPOSE_YAW", "thumb_oppose"]
 
@@ -80,10 +80,10 @@ def thumb_oppose(current: torch.Tensor) -> torch.Tensor:
 
 
 class HandMotor:
-    """The motor model of :mod:`linker_lab.hand` for N hands, on any torch device.
+    """The motor model of :mod:`linker_sim_isaac.hand` for N hands, on any torch device.
 
     ``kp``, ``lower`` and ``upper`` are the joints' drive stiffness and position limits
-    (6 values each); ``motor`` holds the motor's constants (``linker_lab.assets.motor``).
+    (6 values each); ``motor`` holds the motor's constants (``linker_sim_isaac.assets.motor``).
     Shaft state is kept in float64; the per-step position targets are float32, as the
     engine's.
     """
@@ -261,12 +261,12 @@ class HandAction(ActionTerm):
 
 @configclass
 class HandActionCfg(ActionTermCfg):
-    """:class:`HandAction`. ``linker_lab.workstation.hand_action_cfg`` fills in the joints and the motor."""
+    """:class:`HandAction`. ``linker_sim_isaac.workstation.hand_action_cfg`` fills in the joints and the motor."""
 
     class_type: type = HandAction
     joint_names: list[str] = MISSING
     """The 6 actuated joints in :data:`SHAFTS` order: the motor's ``shafts``."""
     motor: dict = MISSING
-    """The hand's motor (``linker_lab.assets.motor(side)``): its shafts and constants."""
+    """The hand's motor (``linker_sim_isaac.assets.motor(side)``): its shafts and constants."""
     normalized: bool = False
     """Actions in [-1, 1] over the joint range instead of radians."""

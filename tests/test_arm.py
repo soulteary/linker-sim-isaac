@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import torch
 
-from linker_lab import arm
+from linker_sim_isaac import arm
 
 ruckig = pytest.importorskip("ruckig")
 

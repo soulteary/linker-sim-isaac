@@ -18,11 +18,11 @@ cd linker-sim-isaac
 
 `install.sh` checks the requirements, installs [uv](https://docs.astral.sh/uv/) if it is
 missing, creates `.venv` from `uv.lock` (Python 3.12, Isaac Lab 3.0, the physics engine, about
-4 GB to download), then runs `linker-lab doctor`, which ends with `All checks passed.` Run
+4 GB to download), then runs `linker-sim-isaac doctor`, which ends with `All checks passed.` Run
 the doctor again at any time:
 
 ```bash
-uv run linker-lab doctor
+uv run linker-sim-isaac doctor
 ```
 
 If `install.sh` installed uv, this terminal does not find it yet (`uv: command not found`):
@@ -38,7 +38,7 @@ environment first (`source .venv/bin/activate`).
 ## 2. Drive the robot: the playground
 
 ```bash
-uv run linker-lab play
+uv run linker-sim-isaac play
 ```
 
 A window opens with LW-v0 and a box on the table. You move the **palm point** (3.5 cm in front
@@ -63,23 +63,23 @@ The arm is slow on purpose: the real controller's speed limits (0.32-0.49 rad/s 
 move the palm point at most about 0.15 m/s. Goals at the edge of the arm's reach are approached
 slowly.
 
-`uv run linker-lab play --selftest` runs a scripted session instead (a move, a turn, a pinch,
+`uv run linker-sim-isaac play --selftest` runs a scripted session instead (a move, a turn, a pinch,
 the other arm, a reset) and reports whether the arm and hand followed. It still needs a
 display. To save the JSON report and screenshots:
 
 ```bash
-uv run linker-lab play --selftest --out tests/outputs/playground
+uv run linker-sim-isaac play --selftest --out tests/outputs/playground
 ```
 
 ## 3. Run a pretrained policy: the gallery
 
 ```bash
-uv run linker-lab gallery list               # the entries
-uv run linker-lab gallery info ycb-grasp     # what it does, its licences, its files
-uv run linker-lab gallery run ycb-grasp      # open it
+uv run linker-sim-isaac gallery list               # the entries
+uv run linker-sim-isaac gallery info ycb-grasp     # what it does, its licences, its files
+uv run linker-sim-isaac gallery run ycb-grasp      # open it
 ```
 
-`run` downloads the entry's files (about 12 MB) into `~/.cache/linker-lab/gallery/`,
+`run` downloads the entry's files (about 12 MB) into `~/.cache/linker-sim-isaac/gallery/`,
 checks them, and opens the scene. Pick one of the 31 held-out YCB objects and press **Drop**.
 It lands at a random spot on the left half of the table, in a random resting pose and
 orientation. Once it settles, press **Grasp**.
@@ -90,16 +90,16 @@ objects and their resting poses were selected.
 
 ## Troubleshooting
 
-- **Unsupported platform or no CUDA device:** linker-lab simulates on an NVIDIA GPU under
+- **Unsupported platform or no CUDA device:** linker-sim-isaac simulates on an NVIDIA GPU under
   Linux only ([requirements](requirements.md)); on other computers use
   [linker-sim-mujoco](https://github.com/linker-bot/linker-sim-mujoco), the same LW-v0 on the CPU.
 - **A missing package or wrong version:** from the repository root run `uv sync --locked`,
-  then `uv run --no-sync linker-lab doctor`. Keep the pinned Newton/MuJoCo-Warp stack together;
+  then `uv run --no-sync linker-sim-isaac doctor`. Keep the pinned Newton/MuJoCo-Warp stack together;
   the compatibility patches target those versions. A failed bootstrap requires a fresh
   Python process after fixing the environment.
-- **Bootstrap/import-order error in a script:** call `linker_lab.bootstrap()` before
-  importing Isaac Lab simulation modules, or import `linker_lab.workstation` first.
-  Importing `linker_lab` alone does not apply the patches.
+- **Bootstrap/import-order error in a script:** call `linker_sim_isaac.bootstrap()` before
+  importing Isaac Lab simulation modules, or import `linker_sim_isaac.workstation` first.
+  Importing `linker_sim_isaac` alone does not apply the patches.
 - **Viewer cannot open:** check that a display is available. `play`, `play --selftest` and
   `gallery run` open windows and have no headless flag. Use a headless environment script
   or the task template for unattended simulation.
@@ -111,10 +111,10 @@ objects and their resting poses were selected.
   to prepare USDs, copy the entire indicated directory, including `Textures/`.
 - **Snapshot is refused:** the error names the reason: `num_envs` is not 1, a package
   version or the configuration differs from the snapshot's, or the environment has state a
-  snapshot cannot hold ([what is saved](api.md#linker_labsnapshot)).
+  snapshot cannot hold ([what is saved](api.md#linker_sim_isaacsnapshot)).
 
 Robot USDs, generated object USDs and gallery downloads live in
-`~/.cache/linker-lab/{usd,objects,gallery}/`. If `XDG_CACHE_HOME` is set, its value replaces
+`~/.cache/linker-sim-isaac/{usd,objects,gallery}/`. If `XDG_CACHE_HOME` is set, its value replaces
 `~/.cache`. These directories can be copied for an offline run together with the installed
 environment; kernel compilation has its own Warp cache and may still run on first use.
 
@@ -124,5 +124,5 @@ environment; kernel compilation has its own Warp cache and may still run on firs
   commanded, objects and cameras, in your own scripts.
 - [The task template](../templates/task/README.md): your own task on LW-v0, as your own
   project, trained with Isaac Lab's trainers.
-- [API reference](api.md): everything linker-lab provides, and what stays stable.
+- [API reference](api.md): everything linker-sim-isaac provides, and what stays stable.
 - [Development and validation](development.md): CPU, wheel, GPU and release checks.

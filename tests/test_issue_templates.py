@@ -24,6 +24,6 @@ def test_issue_templates_link_to_current_documentation():
     assert docs
     for name in ("bug_report.md", "question.md"):
         text = (templates / name).read_text()
-        assert "uv run linker-lab doctor" in text
+        assert "uv run linker-sim-isaac doctor" in text
         assert "scripts/mirror.py" not in text
         assert "Mirror" not in text and "Kaleidoscope" not in text

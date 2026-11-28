@@ -8,11 +8,11 @@ import sys
 import pytest
 import torch
 
-from linker_lab import snapshot
+from linker_sim_isaac import snapshot
 
 
 def example() -> snapshot.Snapshot:
-    header = {"schema": snapshot.SCHEMA, "packages": {"torch": "2.11.0"}, "config": "abc", "linker_lab_commit": None,
+    header = {"schema": snapshot.SCHEMA, "packages": {"torch": "2.11.0"}, "config": "abc", "linker_sim_isaac_commit": None,
               "scene": {"articulations": ["left"], "rigid_objects": []}, "actions": {"left_arm": 7}, "created": "now"}
     state = {"control": {"left_arm": {"raw": torch.arange(7.0)[None], "step": 3}},
              "environment": {"rng_python": [[1, 2, 3], None], "sim_time": 6.0},
@@ -33,7 +33,7 @@ def test_save_and_load_round_trip(tmp_path):
 
 def test_load_refuses_other_files_and_schemas(tmp_path):
     torch.save({"weights": torch.zeros(3)}, tmp_path / "other.pt")
-    with pytest.raises(snapshot.SnapshotError, match="not a linker-lab snapshot") as error:
+    with pytest.raises(snapshot.SnapshotError, match="not a linker-sim-isaac snapshot") as error:
         snapshot.load(tmp_path / "other.pt")
     assert error.value.physics_modified is False
     s = example()
@@ -61,11 +61,11 @@ def test_load_runs_no_code(tmp_path, capsys):
         ("config", "def", "configuration differs"),
         ("scene", {"articulations": ["left", "right"], "rigid_objects": []}, "scene differs"),
         ("actions", {"left_arm": 14}, "actions differs"),
-        ("linker_lab_commit", "1" * 40, "taken with linker-lab"),
+        ("linker_sim_isaac_commit", "1" * 40, "taken with linker-sim-isaac"),
     ],
 )
 def test_header_mismatch_names_the_field(field, value, message):
-    current = {**example().header, "linker_lab_commit": "0" * 40}
+    current = {**example().header, "linker_sim_isaac_commit": "0" * 40}
     with pytest.raises(snapshot.SnapshotError, match=message) as error:
         snapshot._check_header(current, {**current, field: value})
     assert error.value.physics_modified is False
@@ -73,7 +73,7 @@ def test_header_mismatch_names_the_field(field, value, message):
 
 def test_header_ignores_creation_time_and_an_unknown_commit():
     current = example().header
-    snapshot._check_header({**current, "linker_lab_commit": "0" * 40}, {**current, "created": "later", "linker_lab_commit": None})
+    snapshot._check_header({**current, "linker_sim_isaac_commit": "0" * 40}, {**current, "created": "later", "linker_sim_isaac_commit": None})
 
 
 def test_state_layout_mismatch_names_the_entry():
@@ -87,7 +87,7 @@ def test_state_layout_mismatch_names_the_entry():
 
 @pytest.fixture(scope="module")
 def cfg():
-    from linker_lab import workstation
+    from linker_sim_isaac import workstation
 
     return workstation.LWv0EnvCfg
 
@@ -106,7 +106,7 @@ def test_fingerprint_ignores_exactly_the_viewer_fields(cfg):
 
 
 def test_fingerprint_is_the_same_in_a_new_process(cfg):
-    code = "import linker_lab; linker_lab.bootstrap(); from linker_lab import snapshot, workstation; print(snapshot._fingerprint(workstation.LWv0EnvCfg()))"
+    code = "import linker_sim_isaac; linker_sim_isaac.bootstrap(); from linker_sim_isaac import snapshot, workstation; print(snapshot._fingerprint(workstation.LWv0EnvCfg()))"
     out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True).stdout.split()[-1]
     assert out == snapshot._fingerprint(cfg())
 
@@ -220,9 +220,10 @@ def test_restore_keeps_noisy_observations_and_rng_without_recomputing(monkeypatc
         torch.set_rng_state(saved_rng[2])
 
 
-def test_load_refuses_schema_one_without_saved_observations(tmp_path):
+@pytest.mark.parametrize("schema", [1, 2])
+def test_load_refuses_older_snapshot_schemas(tmp_path, schema):
     path = tmp_path / "old.pt"
     state = example()
-    snapshot.save(snapshot.Snapshot({**state.header, "schema": 1}, state.state), path)
-    with pytest.raises(snapshot.SnapshotError, match="snapshot schema 1"):
+    snapshot.save(snapshot.Snapshot({**state.header, "schema": schema}, state.state), path)
+    with pytest.raises(snapshot.SnapshotError, match=f"snapshot schema {schema}"):
         snapshot.load(path)

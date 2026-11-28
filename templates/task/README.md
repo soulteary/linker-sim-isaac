@@ -6,10 +6,10 @@ resets, observations, rewards and terminations are there; the controller or poli
 picks the box up is yours (`run.py` only holds the robot at home).
 
 ```
-pyproject.toml        your project: depends on linker-lab; registers the package with Isaac Lab
+pyproject.toml        your project: depends on linker-sim-isaac; registers the package with Isaac Lab
 src/my_task/
-  __init__.py         prepares linker-lab's engine, registers the gym id My-Task-LW-v0
-  env_cfg.py          the task: MyTaskEnvCfg, a subclass of linker-lab's LWv0EnvCfg
+  __init__.py         prepares linker-sim-isaac's engine, registers the gym id My-Task-LW-v0
+  env_cfg.py          the task: MyTaskEnvCfg, a subclass of linker-sim-isaac's LWv0EnvCfg
 run.py                runs the task with the robot holding home
 ```
 
@@ -42,8 +42,8 @@ settings the script prints `observation: (16, 58), action: 13`. When following *
 below, use the new package prefix in both configuration entry points and the new Gym ID
 for `--task`.
 
-The command above changes the copied project's `linker-lab` source to the checkout you just
-copied from. To share the task using a published release, set `[tool.uv.sources].linker-lab`
+The command above changes the copied project's `linker-sim-isaac` source to the checkout you just
+copied from. To share the task using a published release, set `[tool.uv.sources].linker-sim-isaac`
 back to the Git URL and tag in the original template after that tag appears in the
 [repository's tags](https://github.com/linker-bot/linker-sim-isaac/tags), then run `uv sync`
 and commit the updated `pyproject.toml` and `uv.lock`.
@@ -56,12 +56,12 @@ not inherited by a project depending on it.
 
 ### Use a local checkout
 
-For development against your current source, replace the template's `linker-lab` source
+For development against your current source, replace the template's `linker-sim-isaac` source
 entry with an absolute path (keep the other sections):
 
 ```toml
 [tool.uv.sources]
-linker-lab = { path = "/absolute/path/to/linker-sim-isaac", editable = true }
+linker-sim-isaac = { path = "/absolute/path/to/linker-sim-isaac", editable = true }
 ```
 
 Run `uv sync` after changing it. Python and gallery source changes are then visible
@@ -77,7 +77,7 @@ way, one configuration class per part:
 
 | Part | Here | To change it |
 | --- | --- | --- |
-| Scene | a 5 cm box on the table (`linker_lab.objects`) | add objects, fixed objects, cameras (`workstation.camera_cfg`) |
+| Scene | a 5 cm box on the table (`linker_sim_isaac.objects`) | add objects, fixed objects, cameras (`workstation.camera_cfg`) |
 | Actions | left arm: 7 joint goals [rad] within the real controller's limits; left hand: 6 shaft targets [rad]; the right arm and hand hold home | `workstation.arm_action_cfg(side, command="pose", frame="palm")` for palm poses, `interpolation=False` to stream your own path, `hand_action_cfg(side, normalized=True)` for [-1, 1] |
 | Events | reset to home, then the box at a random place and yaw | Isaac Lab's `mdp` event terms, or your own functions |
 | Observations | joint states, box position, palm position | add terms to `PolicyCfg` |
@@ -85,12 +85,12 @@ way, one configuration class per part:
 | Terminations | 5 s time limit, the box falling off the table | your task's success and failure conditions |
 
 Positions are in the environment frame: x forward over the table, z up, the table top
-0.5 m below the origin. [docs/api.md](https://github.com/linker-bot/linker-sim-isaac/blob/main/docs/api.md) lists everything linker-lab provides.
+0.5 m below the origin. [docs/api.md](https://github.com/linker-bot/linker-sim-isaac/blob/main/docs/api.md) lists everything linker-sim-isaac provides.
 
 An arm action takes absolute joint goals (or poses), like the real controller. A learned
 policy usually outputs small numbers around zero, so map its output to goals around the home
 pose, e.g. `home + 0.5 * action`, in your own action term: a subclass of
-`linker_lab.arm.ArmAction` whose `process_actions` does that before calling the parent's,
+`linker_sim_isaac.arm.ArmAction` whose `process_actions` does that before calling the parent's,
 used with `workstation.arm_action_cfg("left", class_type=MyArmAction)`.
 
 ## Train it

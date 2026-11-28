@@ -1,4 +1,4 @@
-"""Engine checks on the GPU: `linker-lab doctor` and velocity readouts (see velocity_check.py)."""
+"""Engine checks on the GPU: `linker-sim-isaac doctor` and velocity readouts (see velocity_check.py)."""
 
 import json
 import pathlib
@@ -23,7 +23,7 @@ def velocity_check(hz: float) -> dict:
 
 def test_doctor_passes():
     result = subprocess.run(
-        [sys.executable, "-m", "linker_lab.cli", "doctor"], capture_output=True, text=True, timeout=600
+        [sys.executable, "-m", "linker_sim_isaac.cli", "doctor"], capture_output=True, text=True, timeout=600
     )
     assert result.returncode == 0, result.stdout[-2000:] + result.stderr[-2000:]
     assert "All checks passed." in result.stdout

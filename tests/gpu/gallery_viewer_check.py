@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from linker_lab import gallery
+from linker_sim_isaac import gallery
 
 play = gallery.load("ycb-grasp")
 out = Path(sys.argv[1])

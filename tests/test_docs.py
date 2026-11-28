@@ -1,7 +1,7 @@
 """The API reference is the public API's contract (CPU).
 
-- ``docs/api.md`` names each public module in a ``## `linker_lab.<module>``` heading (the
-  package itself: ``## `linker_lab```) and each public name in a ``### `<name>...``` heading
+- ``docs/api.md`` names each public module in a ``## `linker_sim_isaac.<module>``` heading (the
+  package itself: ``## `linker_sim_isaac```) and each public name in a ``### `<name>...``` heading
   below it; the module's ``__all__`` must be the same names.
 - A class section's top-level bullets (``- `member`, `other`: ...``) list its members: every
   member the class defines itself (methods, properties, configuration fields; not the ones
@@ -36,7 +36,7 @@ def sections() -> dict[str, dict[str, list[str]]]:
     # A bullet's continuation lines (indented, not a nested bullet) join its first line.
     text = re.sub(r"\n  (?![ -])", " ", API.read_text())
     for line in text.splitlines():
-        if m := re.match(r"## `(linker_lab(?:\.\w+)?)`", line):
+        if m := re.match(r"## `(linker_sim_isaac(?:\.\w+)?)`", line):
             module = modules.setdefault(m[1], {})
             name = None
         elif line.startswith("## "):
@@ -101,9 +101,9 @@ def test_public_names_are_the_documented_ones(module):
 
 def test_every_public_module_is_documented():
     documented = set(sections())
-    public = {"linker_lab"} | {
-        f"linker_lab.{p.stem}"
-        for p in (ROOT / "src" / "linker_lab").glob("*.py")
+    public = {"linker_sim_isaac"} | {
+        f"linker_sim_isaac.{p.stem}"
+        for p in (ROOT / "src" / "linker_sim_isaac").glob("*.py")
         if p.stem not in {"__init__", "engine", "playground", "cli"}
     }
     assert documented == public
@@ -147,7 +147,7 @@ def docs_workdir(tmp_path_factory):
 
 @pytest.mark.parametrize("where, code", CPU_BLOCKS, ids=[w for w, _ in CPU_BLOCKS])
 def test_code_blocks_run(where, code, docs_workdir, monkeypatch):
-    from linker_lab import workstation
+    from linker_sim_isaac import workstation
 
     monkeypatch.chdir(docs_workdir)
     namespace = {"__name__": "docs", "workstation": workstation, "cfg": workstation.LWv0EnvCfg()}

@@ -9,10 +9,10 @@ keyframe; the parts' files hold the cameras' intrinsics. This module reads them 
 The package also holds what the robot files cannot describe, the constants of the real
 controllers: the O6 hand motor (``hands/o6/motor.yaml``, :func:`motor`) and the AR5_08 arm's
 motion limits (``arms/ar5_08/controller.yaml``, :func:`controller`). linker-sim-assets' README,
-"Robot controllers", defines both models; ``linker_lab.hand`` and ``linker_lab.arm`` implement them.
+"Robot controllers", defines both models; ``linker_sim_isaac.hand`` and ``linker_sim_isaac.arm`` implement them.
 
 Isaac Lab spawns USD. On first use each part's MJCF is converted with mujoco-usd-converter
-into the user cache (``~/.cache/linker-lab/usd/<key>/<part>.usd``, about 1 s for all four);
+into the user cache (``~/.cache/linker-sim-isaac/usd/<key>/<part>.usd``, about 1 s for all four);
 the key is a hash of the package's files and the converter's version, so new files convert
 again and unchanged ones are reused. Two settings the converter does not write are added:
 
@@ -70,7 +70,7 @@ def part_file(part: str) -> Path:
 def cache_dir() -> Path:
     """Where the USD files are converted to."""
     base = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    return base / "linker-lab" / "usd"
+    return base / "linker-sim-isaac" / "usd"
 
 
 def sha256(file: Path) -> str:
@@ -107,7 +107,7 @@ def convert(mjcf: Path, target: Path) -> None:
         from pxr import Sdf, Usd, UsdPhysics
     except ImportError as error:  # e.g. a machine whose glibc is too old for the USD libraries
         raise RuntimeError(
-            f"cannot convert {mjcf.name} to USD here ({error}). Run linker-lab once on a machine "
+            f"cannot convert {mjcf.name} to USD here ({error}). Run linker-sim-isaac once on a machine "
             f"that can, then copy {target.parent} to the same path on this one."
         ) from error
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -127,7 +127,7 @@ def convert(mjcf: Path, target: Path) -> None:
                     Sdf.ValueTypeNames.Int,
                     variability=Sdf.VariabilityUniform,
                 ).Set(-1)
-        layer.documentation = f"LW-v0 {mjcf.stem}, converted from {mjcf.name} by linker_lab.assets"
+        layer.documentation = f"LW-v0 {mjcf.stem}, converted from {mjcf.name} by linker_sim_isaac.assets"
         out = Path(tmp) / f"{mjcf.stem}.usd"
         layer.Export(str(out))
         textures = Path(converted.path).parent / "Textures"  # the palette PNG, next to the USD
@@ -194,7 +194,7 @@ def camera(part: str, body: str) -> dict:
 # ------------------------------------------------------------------ controller data
 
 MOTOR_MODEL = "geared-shaft-v1"
-"""The hand motor model ``linker_lab.hand`` implements (``motor.yaml``'s ``model``)."""
+"""The hand motor model ``linker_sim_isaac.hand`` implements (``motor.yaml``'s ``model``)."""
 
 
 @cache
@@ -205,7 +205,7 @@ def _data(name: str) -> dict:
     file = Path(str(importlib.resources.files("linker_lw_v0") / name))
     data = yaml.safe_load(file.read_text())
     if data.get("schema_version") != 1:
-        raise ValueError(f"{name}: schema_version {data.get('schema_version')!r}, linker-lab reads 1")
+        raise ValueError(f"{name}: schema_version {data.get('schema_version')!r}, linker-sim-isaac reads 1")
     return data
 
 
@@ -236,7 +236,7 @@ def motor(side: str) -> dict:
 
     data = _data("hands/o6/motor.yaml")
     if data["model"] != MOTOR_MODEL:
-        raise ValueError(f"motor.yaml: model {data['model']!r}, linker-lab implements {MOTOR_MODEL!r}")
+        raise ValueError(f"motor.yaml: model {data['model']!r}, linker-sim-isaac implements {MOTOR_MODEL!r}")
     shafts = _unit_joints(side, "hand", data["shafts"], side[0])
     model = _model()
     passive = []

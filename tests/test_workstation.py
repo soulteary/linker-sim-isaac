@@ -3,12 +3,12 @@
 import numpy as np
 import pytest
 
-from linker_lab import assets, physics
+from linker_sim_isaac import assets, physics
 
 
 @pytest.fixture(scope="module")
 def ws():
-    from linker_lab import workstation
+    from linker_sim_isaac import workstation
 
     return workstation
 
@@ -82,7 +82,7 @@ def test_env_cfg(ws):
     names = [n for n in vars(cfg.actions) if not n.startswith("_")]
     assert names == ["left_arm", "right_arm", "left_hand", "right_hand"]
     assert [len(getattr(cfg.actions, n).joint_names) for n in names] == [7, 7, 6, 6]
-    from linker_lab import arm, hand
+    from linker_sim_isaac import arm, hand
 
     for side in ws.SIDES:
         a, h = getattr(cfg.actions, f"{side}_arm"), getattr(cfg.actions, f"{side}_hand")
@@ -92,7 +92,7 @@ def test_env_cfg(ws):
 
 
 def test_arm_action_cfg_frames_and_options(ws):
-    from linker_lab import arm
+    from linker_sim_isaac import arm
 
     palm = ws.arm_action_cfg("right", command="pose", frame="palm")
     assert (palm.body_name, palm.body_offset) == (ws.PALM_BODY["right"], ws.PALM_OFFSET)
@@ -116,7 +116,7 @@ def test_registered(ws):
     import gymnasium as gym
 
     spec = gym.spec("Linker-LW-v0")
-    assert spec.kwargs["env_cfg_entry_point"] == "linker_lab.workstation:LWv0EnvCfg"
+    assert spec.kwargs["env_cfg_entry_point"] == "linker_sim_isaac.workstation:LWv0EnvCfg"
 
 
 @pytest.mark.parametrize("name", ["left_rgb", "left_depth", "right_rgb", "right_depth", "top"])
@@ -172,7 +172,7 @@ def test_home_action_maps_normalized_hands_without_changing_other_terms(ws):
 
     import torch
 
-    from linker_lab import arm, hand
+    from linker_sim_isaac import arm, hand
 
     # Different limits per environment catch accidental use of row zero.
     home = torch.tensor([[0.0, 0.25, 0.5, 0.75, 1.0, 0.5, 0.2],

@@ -1,6 +1,6 @@
 """Save and restore an LW-v0 environment between two ``env.step()`` calls.
 
-    from linker_lab import snapshot, workstation   # before Isaac Lab, as every module
+    from linker_sim_isaac import snapshot, workstation   # before Isaac Lab, as every module
 
     state = snapshot.capture(env)            # between env.step() calls
     ...                                      # step on, try something
@@ -38,14 +38,14 @@ One environment (``num_envs == 1``). :func:`capture` refuses (:class:`SnapshotEr
 cannot account for rather than skipping it. Calling these functions inside ``env.step()`` is not
 supported.
 
-Importing this module applies ``linker_lab.bootstrap()``, so import it before Isaac Lab.
+Importing this module applies ``linker_sim_isaac.bootstrap()``, so import it before Isaac Lab.
 """
 
 from __future__ import annotations
 
-import linker_lab
+import linker_sim_isaac
 
-linker_lab.bootstrap()
+linker_sim_isaac.bootstrap()
 
 import datetime
 import hashlib
@@ -62,10 +62,10 @@ import torch
 
 __all__ = ["capture", "restore", "save", "load", "Snapshot", "SnapshotError"]
 
-SCHEMA = 2
+SCHEMA = 3
 """Version of the snapshot's layout; a snapshot of another schema is refused."""
 
-PACKAGES = ("linker-lab", "linker-lw-v0", "isaaclab", "newton", "mujoco-warp", "warp-lang", "torch")
+PACKAGES = ("linker-sim-isaac", "linker-lw-v0", "isaaclab", "newton", "mujoco-warp", "warp-lang", "torch")
 """Whose versions a snapshot records; restoring needs the same ones."""
 
 UNCOMPARED_CONFIG = ("viewer", "sim.visualizer_cfgs")
@@ -134,9 +134,9 @@ def load(path: str | Path) -> Snapshot:
     against the environment."""
     data = torch.load(Path(path), weights_only=True)
     if not isinstance(data, dict) or set(data) != {"header", "state"}:
-        raise SnapshotError(f"{path} is not a linker-lab snapshot")
+        raise SnapshotError(f"{path} is not a linker-sim-isaac snapshot")
     if data["header"].get("schema") != SCHEMA:
-        raise SnapshotError(f"{path}: snapshot schema {data['header'].get('schema')}, this linker-lab reads {SCHEMA}")
+        raise SnapshotError(f"{path}: snapshot schema {data['header'].get('schema')}, this linker-sim-isaac reads {SCHEMA}")
     return Snapshot(header=data["header"], state=data["state"])
 
 
@@ -198,7 +198,7 @@ def _header(env) -> dict:
         packages[name] = version
     return {
         "schema": SCHEMA,
-        "linker_lab_commit": _commit(),
+        "linker_sim_isaac_commit": _commit(),
         "packages": packages,
         "config": _fingerprint(env.cfg),
         "scene": {"articulations": sorted(env.scene.articulations), "rigid_objects": sorted(env.scene.rigid_objects)},
@@ -208,7 +208,7 @@ def _header(env) -> dict:
 
 
 def _commit() -> str | None:
-    """linker-lab's git commit when it runs from a checkout, else None."""
+    """linker-sim-isaac's git commit when it runs from a checkout, else None."""
     root = Path(__file__).resolve().parents[2]
     if not (root / ".git").exists():
         return None
@@ -237,9 +237,9 @@ def _check_header(current: dict, saved: dict) -> None:
                 raise SnapshotError(f"snapshot taken with other package versions (snapshot, now): {diff}")
             what = "configuration" if key == "config" else key
             raise SnapshotError(f"snapshot does not match this environment: {what} differs")
-    if current["linker_lab_commit"] and saved.get("linker_lab_commit") and current["linker_lab_commit"] != saved["linker_lab_commit"]:
+    if current["linker_sim_isaac_commit"] and saved.get("linker_sim_isaac_commit") and current["linker_sim_isaac_commit"] != saved["linker_sim_isaac_commit"]:
         raise SnapshotError(
-            f"snapshot taken with linker-lab {saved['linker_lab_commit'][:9]}, this is {current['linker_lab_commit'][:9]}"
+            f"snapshot taken with linker-sim-isaac {saved['linker_sim_isaac_commit'][:9]}, this is {current['linker_sim_isaac_commit'][:9]}"
         )
 
 

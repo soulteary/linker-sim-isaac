@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Ask a usage or setup question about linker-lab
+about: Ask a usage or setup question about linker-sim-isaac
 title: "[Question] "
 labels:
   - question
@@ -19,7 +19,7 @@ assignees: []
 
 - **OS** (e.g. Ubuntu 22.04):
 - **Python version** (3.12.x):
-- **Installation diagnostics** (paste the output of `uv run linker-lab doctor`):
+- **Installation diagnostics** (paste the output of `uv run linker-sim-isaac doctor`):
 - **Commit** (`git rev-parse HEAD`):
 - **Command or task** (`play`, `gallery`, or your own task):
 

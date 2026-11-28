@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea or improvement for linker-lab
+about: Suggest an idea or improvement for linker-sim-isaac
 title: "[Feature] "
 labels:
   - enhancement

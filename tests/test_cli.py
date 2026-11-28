@@ -2,8 +2,8 @@
 
 import pytest
 
-import linker_lab
-from linker_lab import cli, engine
+import linker_sim_isaac
+from linker_sim_isaac import cli, engine
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def healthy_doctor(monkeypatch):
 
     monkeypatch.setattr(engine, "check_versions", record("versions", [engine.Check("newton", True, "1.8.0")]))
     monkeypatch.setattr(engine, "check_gpu", record("gpu", engine.Check("gpu", True, "test GPU")))
-    monkeypatch.setattr(linker_lab, "bootstrap", record("bootstrap"))
+    monkeypatch.setattr(linker_sim_isaac, "bootstrap", record("bootstrap"))
     monkeypatch.setattr(engine, "check_patches", record("patches", engine.Check("engine patches", True, "applied")))
     monkeypatch.setattr(engine, "check_simulation", record("simulation", engine.Check("simulation", True, "passed")))
     return calls, record
@@ -45,12 +45,12 @@ def test_doctor_reports_bad_versions_without_bootstrap(healthy_doctor, monkeypat
 @pytest.mark.parametrize("name,error,label", [
     ("bootstrap", ImportError("cannot import ClampingBase"), "engine patches"),
     ("gpu", OSError("libcuda.so unavailable"), "gpu"),
-    ("versions", engine.metadata.PackageNotFoundError("linker-lab"), "package versions"),
+    ("versions", engine.metadata.PackageNotFoundError("linker-sim-isaac"), "package versions"),
     ("simulation", RuntimeError("could not create simulation"), "simulation"),
 ])
 def test_doctor_turns_runtime_errors_into_failures(healthy_doctor, monkeypatch, capsys, name, error, label):
     calls, record = healthy_doctor
-    owner = linker_lab if name == "bootstrap" else engine
+    owner = linker_sim_isaac if name == "bootstrap" else engine
     attr = "bootstrap" if name == "bootstrap" else f"check_{name}"
     monkeypatch.setattr(owner, attr, record(name, error=error))
     assert cli.doctor() == 1

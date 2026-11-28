@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROJECT_FILE = REPO_ROOT / "pyproject.toml"
-PACKAGE_FILE = REPO_ROOT / "src" / "linker_lab" / "__init__.py"
+PACKAGE_FILE = REPO_ROOT / "src" / "linker_sim_isaac" / "__init__.py"
 CHANGELOG_FILE = REPO_ROOT / "CHANGELOG.md"
 VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+(?:[.a-zA-Z0-9-]+)?$")
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
@@ -67,7 +67,7 @@ def runtime_version() -> str:
             value = ast.literal_eval(node.value)
             if isinstance(value, str):
                 return value
-    raise ReleaseError("linker_lab.__version__ must be a string literal")
+    raise ReleaseError("linker_sim_isaac.__version__ must be a string literal")
 
 
 def changelog_notes(version: str, content: str) -> str:
@@ -173,13 +173,13 @@ def prepare_release(
     if REPO_ROOT not in resolved_output.parents:
         raise ReleaseError("output directory must be inside the repository")
     resolved_output.mkdir(parents=True, exist_ok=True)
-    archive = resolved_output / f"linker-lab-{version}.tar.gz"
+    archive = resolved_output / f"linker-sim-isaac-{version}.tar.gz"
     notes_file = resolved_output / "RELEASE_NOTES.md"
     checksums = resolved_output / "SHA256SUMS"
     _run_git(
         "archive",
         "--format=tar.gz",
-        f"--prefix=linker-lab-{version}/",
+        f"--prefix=linker-sim-isaac-{version}/",
         f"--output={archive}",
         tag,
     )

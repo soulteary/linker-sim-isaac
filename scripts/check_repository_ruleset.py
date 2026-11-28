@@ -133,7 +133,7 @@ def validate_policy(policy: Mapping[str, object]) -> None:
 def _fetch_json(url: str) -> object:
     headers = {
         "Accept": "application/vnd.github+json",
-        "User-Agent": "linker-lab-ruleset-audit",
+        "User-Agent": "linker-sim-isaac-ruleset-audit",
         "X-GitHub-Api-Version": API_VERSION,
     }
     token = os.environ.get("GITHUB_TOKEN")

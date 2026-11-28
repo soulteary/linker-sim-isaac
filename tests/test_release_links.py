@@ -1,7 +1,7 @@
 """Everything that points at this repository points at it, at the right release (CPU).
 
 - The clone commands in the user docs clone this repository.
-- The task template installs linker-lab from this repository's tag ``v<version>``, the version
+- The task template installs linker-sim-isaac from this repository's tag ``v<version>``, the version
   being released.
 - Each gallery artifact is a file of this repository's release ``<entry>-<entry version>``.
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from linker_lab import __version__, gallery
+from linker_sim_isaac import __version__, gallery
 
 REPOSITORY = "https://github.com/linker-bot/linker-sim-isaac"
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,7 +28,7 @@ def test_clone_commands_clone_this_repository():
 
 def test_task_template_installs_this_release():
     project = tomllib.loads((ROOT / "templates" / "task" / "pyproject.toml").read_text())
-    source = project["tool"]["uv"]["sources"]["linker-lab"]
+    source = project["tool"]["uv"]["sources"]["linker-sim-isaac"]
     assert source["git"].removesuffix(".git") == REPOSITORY
     assert source.get("tag") == f"v{__version__}", f"the template installs {source}, not tag v{__version__}"
 
