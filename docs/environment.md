@@ -236,7 +236,10 @@ cfg.scene.top = workstation.camera_cfg("top", width=640, height=360)
 # in the loop: env.scene["top"].data.output["rgb"], shape (num_envs, height, width, 3)
 ```
 
-Images are rendered by ray tracing on the GPU; each camera costs simulation speed.
+The renderer uses a pinhole model with lens distortion disabled. To clear the camera
+housing mesh, each rendered camera sits 6 mm forward along the optical axis from its
+mount's optical frame. Account for this offset when comparing depths or transforming
+point clouds using the mount pose. Rendering each camera costs GPU time.
 
 ## Many environments
 

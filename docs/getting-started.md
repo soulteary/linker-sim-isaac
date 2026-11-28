@@ -80,11 +80,13 @@ uv run linker-lab gallery run ycb-grasp      # open it
 ```
 
 `run` downloads the entry's files (about 12 MB) into `~/.cache/linker-lab/gallery/`,
-checks them, and opens the scene: one workstation and a panel. Pick an object (31 YCB
-objects, none of them seen in training), press **Drop**: it lands at a random spot on the
-left half of the table, in a random resting pose and turn. When it has come to rest press **Grasp**: the
-policy looks at the object once and the left hand picks it up and holds it 15 cm up. The
-status line says whether it held. **Reset** clears the table. More in [the gallery](gallery.md).
+checks them, and opens the scene. Pick one of the 31 held-out YCB objects and press **Drop**.
+It lands at a random spot on the left half of the table, in a random resting pose and
+orientation. Once it settles, press **Grasp**.
+The policy uses stored surface points and simulated state to adjust a recorded grasp once.
+The hand follows that path, then attempts a 15 cm lift and a 2 s hold. The status line
+reports the result. **Reset** clears the table. See [the gallery](gallery.md) for how the
+objects and their resting poses were selected.
 
 ## Troubleshooting
 
