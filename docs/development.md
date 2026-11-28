@@ -68,8 +68,11 @@ terms. Local aarch64 use and the workflow's x86_64 runner are separate validatio
 - `engine`: the pinned compatibility patches; an internal module rather than a public API.
 - `templates/task`: a separate task project; its sources and lock are independent of this checkout.
 
-The public contract is [api.md](api.md). New Python examples are collected by
-`tests/test_docs.py`; simulation examples execute separately in `tests/gpu/test_docs_gpu.py`.
+The public contract is [api.md](api.md). `tests/test_docs.py` collects fenced `python`
+blocks from the README, `docs/` and the task template README. It compiles every block and
+runs the CPU examples with `workstation` and `cfg` already defined. Blocks containing
+`launch_simulation` run in separate processes in `tests/gpu/test_docs_gpu.py` on CUDA.
+Shell commands, TOML snippets and alternatives in comments need separate checks.
 A change in behaviour comes with its test, the matching text in the API reference and the
 guides, and a line in the changelog under `## Unreleased`.
 
