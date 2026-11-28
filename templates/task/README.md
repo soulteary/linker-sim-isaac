@@ -27,8 +27,20 @@ uv run python run.py            # 16 environments, headless: prints the reward
 uv run python run.py --viewer   # 4 environments in the viewer
 ```
 
-To rename it, change the project `name` and the entry point in `pyproject.toml`, the folder
-`src/my_task`, the gym id in `__init__.py`, and the imports in `run.py`.
+To rename the copied task, choose a distribution name, a Python package name and a Gym ID.
+For example, use `box-lift`, `box_lift` and `Box-Lift-LW-v0`:
+
+| Location in your copy | Change |
+| --- | --- |
+| `pyproject.toml` | Set `[project]` name to `"box-lift"`, the entry under `[project.entry-points."isaaclab.tasks"]` to `box_lift = "box_lift"`, and `[tool.hatch.build.targets.wheel]` packages to `["src/box_lift"]`. |
+| `src/my_task/` | Rename the directory to `src/box_lift/`. |
+| `src/box_lift/__init__.py` | In `gym.register(...)`, set `id="Box-Lift-LW-v0"` and `env_cfg_entry_point` to `"box_lift.env_cfg:MyTaskEnvCfg"`. |
+| `run.py` | Import `MyTaskEnvCfg` from `box_lift.env_cfg` and pass `"Box-Lift-LW-v0"` to `gym.make(...)`. |
+
+Run `uv sync` in the renamed project and then `uv run python run.py`. With the default
+settings the script prints `observation: (16, 58), action: 13`. When following **Train it**
+below, use the new package prefix in both configuration entry points and the new Gym ID
+for `--task`.
 
 The command above changes the copied project's `linker-lab` source to the checkout you just
 copied from. To share the task using a published release, set `[tool.uv.sources].linker-lab`
