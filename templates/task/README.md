@@ -20,8 +20,9 @@ Run the copy command from the `linker-sim-isaac` checkout; the `my-task` folder 
 separate project with its own virtual environment and dependency lock.
 
 ```bash
+checkout=$(pwd -P)
 cp -r templates/task ~/my-task && cd ~/my-task
-uv sync                         # creates .venv with linker-lab, Isaac Lab and the engine (~8 GB)
+uv add --editable "$checkout"    # installs this checkout into the task environment (~8 GB)
 uv run python run.py            # 16 environments, headless: prints the reward
 uv run python run.py --viewer   # 4 environments in the viewer
 ```
@@ -41,10 +42,11 @@ settings the script prints `observation: (16, 58), action: 13`. When following *
 below, use the new package prefix in both configuration entry points and the new Gym ID
 for `--task`.
 
-`uv sync` installs `linker-lab` from its release tag `v2.0.0` in
-[linker-bot/linker-sim-isaac](https://github.com/linker-bot/linker-sim-isaac)
-(`[tool.uv.sources]` in `pyproject.toml`). To move to a later release, change the tag and run
-`uv sync` again.
+The command above changes the copied project's `linker-lab` source to the checkout you just
+copied from. To share the task using a published release, set `[tool.uv.sources].linker-lab`
+back to the Git URL and tag in the original template after that tag appears in the
+[repository's tags](https://github.com/linker-bot/linker-sim-isaac/tags), then run `uv sync`
+and commit the updated `pyproject.toml` and `uv.lock`.
 
 The task project repeats the Newton override needed by Isaac Lab 3.0 and a
 `tinyobjloader` prerelease constraint. Keep those when renaming the template. It resolves
