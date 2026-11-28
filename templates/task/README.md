@@ -95,10 +95,28 @@ used with `workstation.arm_action_cfg("left", class_type=MyArmAction)`.
 
 ## Train it
 
-The template has no learner. Isaac Lab's own trainers work with it: write a learner
-configuration in a new module, e.g. `src/my_task/agents.py` with a `MyPPORunnerCfg` subclassing
-`RslRlOnPolicyRunnerCfg` from `isaaclab_rl.rsl_rl`, and name it in the registration in
-`src/my_task/__init__.py`:
+Start in the copied task project. Run `uv run python run.py --seconds 1` to check the
+environment before adding a learner. With the template defaults, the first line of task output
+is `observation: (16, 58), action: 13`. This run holds the robot at home.
+
+For a short PPO run, create `src/my_task/agents.py` in the task project. The example uses
+[Isaac Lab 3.0.0's MLP PPO configuration](https://github.com/isaac-sim/IsaacLab/blob/v3.0.0/source/isaaclab_tasks/isaaclab_tasks/core/cartpole/agents/rsl_rl_ppo_cfg.py)
+and gives the actor and critic the task's joint, box and palm observations:
+
+```python
+from isaaclab.utils import configclass
+from isaaclab_tasks.core.cartpole.agents.rsl_rl_ppo_cfg import CartpolePPORunnerCfg
+
+
+@configclass
+class MyPPORunnerCfg(CartpolePPORunnerCfg):
+    experiment_name = "lw_v0_box"
+    obs_groups = {"actor": ["policy"], "critic": ["policy"]}
+    save_interval = 1
+```
+
+In `src/my_task/__init__.py`, replace the `kwargs` argument of the existing `gym.register`
+call with the following. Use your package name if you renamed `my_task`.
 
 ```python
 kwargs={
@@ -107,13 +125,16 @@ kwargs={
 }
 ```
 
-then
+Train for two updates and replay the latest checkpoint for this experiment. Use the Gym ID
+you registered if you renamed the task.
 
 ```bash
-uv run isaaclab train --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 512
-uv run isaaclab play --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 16
+uv run isaaclab train --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 16 --max_iterations 2 --viz none
+uv run isaaclab play --rl_library rsl_rl --task My-Task-LW-v0 --num_envs 4 --checkpoint latest --viz none
 ```
 
-Isaac Lab finds the task through the `isaaclab.tasks` entry point in `pyproject.toml`.
-Runs are written to `logs/rsl_rl/<experiment>/<time>/` in the current directory. See
-Isaac Lab's documentation for the learners and their settings.
+Training writes `model_*.pt` under `logs/rsl_rl/lw_v0_box/<run>/` in the task project.
+Playback prints the checkpoint path it loads; press Ctrl+C to end the headless loop.
+To replay a particular run later, pass that model file's path to `--checkpoint`.
+Two updates exercise training, saving and inference. For grasp learning, tune the action
+scaling and rewards above, increase the training budget and choose a longer save interval.
