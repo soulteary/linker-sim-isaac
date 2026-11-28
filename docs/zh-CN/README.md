@@ -74,15 +74,16 @@ uv run linker-lab gallery run ycb-grasp      # 打开
 ```bash
 (
   set -e
+  checkout=$(pwd -P)
   cp -r templates/task ~/my-task
   cd ~/my-task
-  uv sync
+  uv add --editable "$checkout"
   uv run python run.py             # 无窗口，机器人保持初始姿态
   uv run python run.py --viewer
 )
 ```
 
-模板从本仓库的发布标签 `v2.0.0` 安装 linker-lab。要针对本地修改联调，按[模板 README](../../templates/task/README.md#use-a-local-checkout)改为本地路径依赖。
+上面的命令让 `~/my-task` 使用当前仓库里的 linker-lab，修改源码后即可在任务中验证。分享任务前，请确认模板指定的发布标签已存在，把任务副本中 `pyproject.toml` 的 `linker-lab` 来源改回该标签，运行 `uv sync` 更新 `uv.lock`，再一起提交这两个文件。详见[模板说明](../../templates/task/README.md)。
 
 加入学习器配置后，可以用 Isaac Lab 自带的 `isaaclab train` / `isaaclab play` 训练和回放，见模板的 README。
 
