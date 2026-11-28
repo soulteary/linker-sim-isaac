@@ -18,7 +18,9 @@ import dataclasses
 import importlib
 import inspect
 import re
+import sys
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -136,4 +138,9 @@ def test_code_blocks_run(where, code):
     from linker_lab import workstation
 
     namespace = {"__name__": "docs", "workstation": workstation, "cfg": workstation.LWv0EnvCfg()}
-    exec(compile(code, where, "exec"), namespace)
+    # Dataclass decorators resolve annotations through the defining module.
+    module = ModuleType(namespace["__name__"])
+    module.__dict__.update(namespace)
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setitem(sys.modules, module.__name__, module)
+        exec(compile(code, where, "exec"), module.__dict__)
